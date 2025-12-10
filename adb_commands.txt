@@ -1,0 +1,48 @@
+ADB Commands Summary
+
+Basics
+
+Enter shell: adb shell
+
+List packages: pm list packages pm list packages | grep -i
+
+Remove/Disable Apps (run inside shell)
+
+Ads & Bloat
+
+pm uninstall –user 0 com.transsion.statisticalsales pm uninstall –user 0
+com.transsion.magazineservice pm uninstall –user 0
+com.transsion.manualguide pm uninstall –user 0 com.transsion.repaircard
+pm uninstall –user 0 com.transsion.trancarelite pm uninstall –user 0
+com.transsion.chromecustomization
+
+Themes & Fonts
+
+pm uninstall –user 0 com.transsion.magicfont pm uninstall –user 0
+com.transsion.theme.icon pm uninstall –user 0 com.transsion.os.typeface
+
+Tools
+
+pm uninstall –user 0 com.transsion.applock pm uninstall –user 0
+com.transsion.notebook
+
+Hi Translate
+
+pm uninstall –user 0 com.zaz.translate
+
+Google Duo / Meet
+
+pm uninstall –user 0 com.google.android.apps.tachyon
+
+AI Gallery
+
+pm uninstall –user 0 com.gallery20
+
+Disable Alternative
+
+pm disable-user –user 0
+
+Notes
+
+-   Only uninstall for user 0 (safe).
+-   Do NOT remove system critical apps.

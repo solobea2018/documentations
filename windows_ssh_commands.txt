@@ -1,0 +1,50 @@
+Windows SSH Setup Commands (with Documentation)
+
+1. Install OpenSSH Server
+
+Check if SSH server is installed
+
+Get-WindowsCapability -Online | ? Name -like “OpenSSH.Server*”
+
+Install OpenSSH Server if missing
+
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+
+2. Start and Enable SSH Server
+
+Start SSH server immediately
+
+Start-Service sshd
+
+Enable SSH server to start on every boot
+
+Set-Service -Name sshd -StartupType ‘Automatic’
+
+3. Enable SSH Agent (optional, for key-based login)
+
+Start-Service ssh-agent Set-Service ssh-agent -StartupType Automatic
+
+4. Allow SSH Through Windows Firewall
+
+Create firewall rule for SSH inbound connections
+
+New-NetFirewallRule -Name sshd -DisplayName “OpenSSH Server” -Enabled
+True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+
+5. Get Windows IP Address
+
+Display network information and find your IPv4 address
+
+ipconfig
+
+6. Connect to Windows from Linux
+
+SSH command format:
+
+ssh @
+
+ssh your_username@192.168.x.x
+
+7. Example
+
+ssh Pontio@192.168.1.5

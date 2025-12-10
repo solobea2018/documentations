@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ADB Commands Documentation</title>
+
+  <style>
+
+    /* GLOBAL PAGE */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 320px;
+      height: 100vh;
+      background: #1e1e1e;
+      color: #ccc;
+      padding: 25px 20px;
+      overflow-y: auto;
+      border-right: 2px solid #000;
+    }
+
+    .sidebar h2 {
+      color: #4fc3f7;
+      font-size: 22px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: #ddd;
+      text-decoration: none;
+      padding: 6px 2px;
+      font-size: 15px;
+    }
+
+    .sidebar a:hover { color: #4fc3f7; }
+
+    /* MAIN CONTENT */
+    .main {
+      margin-left: 350px;
+      padding: 30px;
+    }
+
+    .section-title {
+      font-size: 32px;
+      color: #003399;
+      margin-top: 40px;
+    }
+
+    .code-box {
+      background: #1e1e1e;
+      color: #dcdcdc;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: Consolas, monospace;
+      font-size: 15px;
+      white-space: pre-wrap;
+      border: 1px solid #333;
+      margin-top: 15px;
+    }
+
+    .comment { color: #6dc26d; }
+    .cmd { color: #9cdcfe; }
+    .str { color: #ce9178; }
+
+  </style>
+</head>
+
+
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>ADB Documentation</h2>
+  <a href="#intro">Introduction</a>
+  <a href="#setup">Setup & Connection</a>
+  <a href="#shell">ADB Shell Basics</a>
+  <a href="#packages">Package Management</a>
+  <a href="#bloatware">Safe Bloatware Removal</a>
+  <a href="#disable">Disable Apps</a>
+  <a href="#file">File Operations</a>
+  <a href="#reboot">Reboot & Recovery Commands</a>
+  <a href="#logs">Log & Debugging</a>
+  <a href="#notes">Important Notes</a>
+</div>
+
+
+
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <h1 style="color:#003399;">ADB Commands Documentation</h1>
+  <p>This documentation provides a complete guide to commonly used ADB commands for Android debugging, package management, bloat removal, log retrieval, file transfers, reboots, and shell operations.</p>
+  <p>All commands use a VS Code–styled terminal theme for clarity.</p>
+
+
+
+
+  <!-- INTRO -->
+  <h2 id="intro" class="section-title">Introduction</h2>
+  <p>ADB (Android Debug Bridge) is a command-line tool used to communicate with Android devices for debugging, app removal, file transfers, shell access, and system modifications.</p>
+  <p>ADB must be enabled under Developer Options → USB Debugging on your Android device.</p>
+
+
+
+
+  <!-- SETUP -->
+  <h2 id="setup" class="section-title">Setup and Connect Device</h2>
+
+  <div class="code-box">
+    <span class="comment"># Check if device is detected</span><br>
+    <span class="cmd">adb devices</span><br><br>
+
+    <span class="comment"># Restart ADB server</span><br>
+    <span class="cmd">adb kill-server</span><br>
+    <span class="cmd">adb start-server</span><br><br>
+
+    <span class="comment"># Connect wirelessly (optional)</span><br>
+    <span class="cmd">adb tcpip 5555</span><br>
+    <span class="cmd">adb connect 192.168.x.x:5555</span>
+  </div>
+
+
+
+
+  <!-- SHELL -->
+  <h2 id="shell" class="section-title">ADB Shell Basics</h2>
+
+  <div class="code-box">
+    <span class="comment"># Enter ADB shell (Android command-line)</span><br>
+    <span class="cmd">adb shell</span><br><br>
+
+    <span class="comment"># List installed packages</span><br>
+    <span class="cmd">pm list packages</span><br>
+    <span class="cmd">pm list packages | grep -i keyword</span><br><br>
+
+    <span class="comment"># Check device info</span><br>
+    <span class="cmd">getprop</span><br><br>
+
+    <span class="comment"># Show battery info</span><br>
+    <span class="cmd">dumpsys battery</span><br><br>
+
+    <span class="comment"># Check running services</span><br>
+    <span class="cmd">service list</span>
+  </div>
+
+
+
+
+  <!-- PACKAGES -->
+  <h2 id="packages" class="section-title">Package Management Commands</h2>
+
+  <div class="code-box">
+    <span class="comment"># Uninstall an app (user 0 only, safe)</span><br>
+    <span class="cmd">pm uninstall --user 0 package.name</span><br><br>
+
+    <span class="comment"># Disable an app instead of uninstalling</span><br>
+    <span class="cmd">pm disable-user --user 0 package.name</span><br><br>
+
+    <span class="comment"># Clear app data</span><br>
+    <span class="cmd">pm clear package.name</span><br><br>
+
+    <span class="comment"># Re-enable disabled app</span><br>
+    <span class="cmd">pm enable package.name</span><br><br>
+  </div>
+
+
+
+
+  <!-- SAFE BLOATWARE REMOVAL -->
+  <h2 id="bloatware" class="section-title">Safe Bloatware Removal (TECNO / Infinix / itel)</h2>
+
+  <p>The following apps can be safely removed using ADB.
+    These commands only uninstall the app for user 0 (your main user).
+    The system keeps the original APK, so it is safe and reversible.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Ads & Bloat</span><br>
+    pm uninstall --user 0 com.transsion.statisticalsales<br>
+    pm uninstall --user 0 com.transsion.magazineservice<br>
+    pm uninstall --user 0 com.transsion.manualguide<br>
+    pm uninstall --user 0 com.transsion.repaircard<br>
+    pm uninstall --user 0 com.transsion.trancarelite<br>
+    pm uninstall --user 0 com.transsion.chromecustomization<br><br>
+
+    <span class="comment"># Themes & Fonts</span><br>
+    pm uninstall --user 0 com.transsion.magicfont<br>
+    pm uninstall --user 0 com.transsion.theme.icon<br>
+    pm uninstall --user 0 com.transsion.os.typeface<br><br>
+
+    <span class="comment"># Tools</span><br>
+    pm uninstall --user 0 com.transsion.applock<br>
+    pm uninstall --user 0 com.transsion.notebook<br><br>
+
+    <span class="comment"># Hi Translate</span><br>
+    pm uninstall --user 0 com.zaz.translate<br><br>
+
+    <span class="comment"># Google Duo / Meet</span><br>
+    pm uninstall --user 0 com.google.android.apps.tachyon<br><br>
+
+    <span class="comment"># AI Gallery</span><br>
+    pm uninstall --user 0 com.gallery20<br><br>
+
+  </div>
+
+
+
+
+  <!-- DISABLE -->
+  <h2 id="disable" class="section-title">Disable Apps (Alternative to Uninstall)</h2>
+
+  <p>Instead of uninstalling, apps can be disabled.
+    Disabling keeps the APK but prevents the app from running or updating.</p>
+
+  <div class="code-box">
+    <span class="cmd">pm disable-user --user 0 package.name</span><br><br>
+
+    <span class="comment"># Example:</span><br>
+    <span class="cmd">pm disable-user --user 0 com.transsion.applock</span>
+  </div>
+
+
+
+
+  <!-- FILE OPERATIONS -->
+  <h2 id="file" class="section-title">File Transfer Operations</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Push file from PC to phone</span><br>
+    <span class="cmd">adb push localfile.txt /sdcard/</span><br><br>
+
+    <span class="comment"># Pull file from phone to PC</span><br>
+    <span class="cmd">adb pull /sdcard/file.txt ./</span><br><br>
+
+    <span class="comment"># List files</span><br>
+    <span class="cmd">adb shell ls /sdcard/</span><br><br>
+
+  </div>
+
+
+
+
+  <!-- REBOOT -->
+  <h2 id="reboot" class="section-title">Reboot & Recovery Commands</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Reboot device normally</span><br>
+    <span class="cmd">adb reboot</span><br><br>
+
+    <span class="comment"># Reboot to fastboot mode</span><br>
+    <span class="cmd">adb reboot bootloader</span><br><br>
+
+    <span class="comment"># Reboot to recovery</span><br>
+    <span class="cmd">adb reboot recovery</span><br><br>
+
+  </div>
+
+
+
+
+  <!-- LOGS -->
+  <h2 id="logs" class="section-title">Log & Debugging Commands</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># View live logs (very useful for debugging)</span><br>
+    <span class="cmd">adb logcat</span><br><br>
+
+    <span class="comment"># Save logs to file</span><br>
+    <span class="cmd">adb logcat -d > logs.txt</span><br><br>
+
+    <span class="comment"># Check system info</span><br>
+    <span class="cmd">adb shell dumpsys</span><br><br>
+
+  </div>
+
+
+
+
+  <!-- NOTES -->
+  <h2 id="notes" class="section-title">Important Notes</h2>
+
+  <ul>
+    <li>Uninstalling with <b>--user 0</b> is safe. The system keeps the original APK.</li>
+    <li>Disabled apps can be re-enabled anytime.</li>
+    <li>Do NOT remove system-critical apps like launcher, telephony, or system UI.</li>
+    <li>ADB must be authorized on the device before use.</li>
+    <li>To restore all removed apps, factory reset will reinstall them.</li>
+  </ul>
+
+</div> <!-- END MAIN -->
+
+</body>
+</html>
