@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Windows SSH Server Documentation</title>
+
+  <style>
+
+    /* GLOBAL PAGE */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 320px;
+      height: 100vh;
+      background: #1e1e1e;
+      color: #ccc;
+      padding: 25px 20px;
+      overflow-y: auto;
+      border-right: 2px solid #000;
+    }
+
+    .sidebar h2 {
+      color: #4fc3f7;
+      font-size: 22px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: #ddd;
+      text-decoration: none;
+      padding: 6px 2px;
+      font-size: 15px;
+    }
+
+    .sidebar a:hover {
+      color: #4fc3f7;
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      margin-left: 350px;
+      padding: 30px;
+    }
+
+    /* TITLES */
+    .section-title {
+      font-size: 32px;
+      color: #003399;
+      margin-top: 40px;
+    }
+
+    /* VS CODE STYLE CODE BLOCK */
+    .code-box {
+      background: #1e1e1e;
+      color: #dcdcdc;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: Consolas, monospace;
+      font-size: 15px;
+      white-space: pre-wrap;
+      border: 1px solid #333;
+      margin-top: 15px;
+    }
+
+    .comment { color: #6dc26d; }
+    .cmd { color: #9cdcfe; }
+    .str { color: #ce9178; }
+    .key { color: #c586c0; }
+
+  </style>
+</head>
+
+
+
+<body>
+
+<!-- SIDEBAR NAVIGATION -->
+<div class="sidebar">
+  <h2>Windows SSH Documentation</h2>
+  <a href="#intro">Introduction</a>
+  <a href="#check">Check SSH Installation</a>
+  <a href="#install">Install OpenSSH Server</a>
+  <a href="#start">Start & Enable SSH Server</a>
+  <a href="#agent">Enable SSH Agent</a>
+  <a href="#firewall">Allow SSH in Firewall</a>
+  <a href="#ip">Find Windows IP Address</a>
+  <a href="#connect">Connect from Linux</a>
+  <a href="#example">Example Connection</a>
+</div>
+
+
+
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <h1 style="color:#003399;">Windows SSH Server Setup Documentation</h1>
+  <p>This guide explains how to install, configure, and access the OpenSSH Server on Windows.
+    It uses a VS Code–style theme for commands and includes professional explanations and examples.</p>
+
+
+
+
+  <!-- INTRO -->
+  <h2 id="intro" class="section-title">Introduction</h2>
+  <p>Windows includes a built-in OpenSSH Server capability.
+    Using this, administrators can remotely access PowerShell, CMD, files, and system management functions securely over SSH.</p>
+  <p>This documentation covers installation, service configuration, firewall settings, obtaining the IP address, and connecting from Linux.</p>
+
+
+
+
+  <!-- CHECK SSH -->
+  <h2 id="check" class="section-title">1. Check if OpenSSH Server is Installed</h2>
+
+  <p>The following command checks whether the OpenSSH Server capability exists on the system, and whether it is installed or not.</p>
+
+  <div class="code-box">
+    <span class="comment"># Check OpenSSH Server availability</span><br>
+    <span class="cmd">Get-WindowsCapability -Online | ? Name -like "OpenSSH.Server*"</span><br><br>
+
+    <span class="comment"># Output explanation:</span><br>
+    <span class="comment"># State: Installed → SSH server already available</span><br>
+    <span class="comment"># State: NotPresent → Must be installed manually</span>
+  </div>
+
+
+
+
+  <!-- INSTALL SSH -->
+  <h2 id="install" class="section-title">2. Install OpenSSH Server</h2>
+
+  <p>If SSH server is not installed, run the command below to install it from Windows optional features.</p>
+
+  <div class="code-box">
+    <span class="comment"># Install OpenSSH Server (Windows capability)</span><br>
+    <span class="cmd">Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0</span><br><br>
+
+    <span class="comment"># After installation the SSH service becomes available as 'sshd'.</span>
+  </div>
+
+
+
+
+  <!-- START SSH -->
+  <h2 id="start" class="section-title">3. Start & Enable SSH Server</h2>
+
+  <p>Once installed, the SSH server must be started manually the first time, and then configured to start automatically at boot.</p>
+
+  <div class="code-box">
+    <span class="comment"># Start SSH server immediately</span><br>
+    <span class="cmd">Start-Service sshd</span><br><br>
+
+    <span class="comment"># Enable SSH server on system startup</span><br>
+    <span class="cmd">Set-Service -Name sshd -StartupType 'Automatic'</span>
+  </div>
+
+
+
+
+  <!-- AGENT -->
+  <h2 id="agent" class="section-title">4. Enable SSH Agent (Optional)</h2>
+
+  <p>The SSH agent stores private keys securely in memory, allowing key-based authentication without typing passwords repeatedly.</p>
+
+  <div class="code-box">
+    <span class="comment"># Start the SSH authentication agent</span><br>
+    <span class="cmd">Start-Service ssh-agent</span><br><br>
+
+    <span class="comment"># Enable automatic start on boot</span><br>
+    <span class="cmd">Set-Service ssh-agent -StartupType Automatic</span>
+  </div>
+
+
+
+
+  <!-- FIREWALL -->
+  <h2 id="firewall" class="section-title">5. Allow SSH Through Windows Firewall</h2>
+
+  <p>By default Windows blocks inbound SSH on port 22.
+    This command creates a firewall rule allowing external connections.</p>
+
+  <div class="code-box">
+    <span class="comment"># Allow SSH (port 22) through Windows Firewall</span><br>
+    <span class="cmd">New-NetFirewallRule -Name sshd -DisplayName "OpenSSH Server" `
+-Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22</span><br><br>
+
+    <span class="comment"># After this, remote SSH clients can reach the Windows machine.</span>
+  </div>
+
+
+
+
+  <!-- FIND IP -->
+  <h2 id="ip" class="section-title">6. Get Windows IP Address</h2>
+
+  <p>The IP address is required for connecting from external machines.
+    Use the command below to list all network interfaces.</p>
+
+  <div class="code-box">
+    <span class="comment"># Show network information</span><br>
+    <span class="cmd">ipconfig</span><br><br>
+
+    <span class="comment"># Look for the IPv4 Address under your active network adapter.</span>
+  </div>
+
+
+
+
+  <!-- CONNECT FROM LINUX -->
+  <h2 id="connect" class="section-title">7. Connect from Linux via SSH</h2>
+
+  <p>Once the Windows SSH server is running and firewall is configured, Linux (or macOS) clients can connect using the standard SSH command.</p>
+
+  <div class="code-box">
+    <span class="comment"># SSH command format</span><br>
+    <span class="cmd">ssh username@IP_ADDRESS</span><br><br>
+
+    <span class="comment"># Example</span><br>
+    <span class="cmd">ssh your_username@192.168.x.x</span>
+  </div>
+
+
+
+
+  <!-- EXAMPLE -->
+  <h2 id="example" class="section-title">8. Full SSH Example</h2>
+
+  <p>A complete working command for accessing a Windows machine from Linux:</p>
+
+  <div class="code-box">
+    <span class="cmd">ssh Pontio@192.168.1.5</span><br><br>
+
+    <span class="comment"># Once connected, you will be logged into a Windows PowerShell session over SSH.</span>
+  </div>
+
+
+
+</div> <!-- END MAIN -->
+
+</body>
+</html>

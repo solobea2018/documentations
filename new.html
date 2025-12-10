@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Administrator Full Documentation</title>
+
+  <style>
+
+    /* GLOBAL PAGE LAYOUT */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 320px;
+      height: 100vh;
+      background: #1e1e1e;
+      color: #ccc;
+      padding: 25px 20px;
+      overflow-y: auto;
+      border-right: 2px solid #000;
+    }
+
+    .sidebar h2 {
+      color: #4fc3f7;
+      font-size: 22px;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: #dcdcdc;
+      text-decoration: none;
+      padding: 6px 3px;
+      font-size: 15px;
+    }
+
+    .sidebar a:hover {
+      color: #4fc3f7;
+    }
+
+    /* MAIN CONTENT PANEL */
+    .main {
+      margin-left: 350px;
+      padding: 30px;
+    }
+
+    /* SECTION TITLES */
+    .section-title {
+      font-size: 30px;
+      color: #003399;
+      margin-top: 50px;
+    }
+
+    /* VS CODE STYLE DARK CODE BLOCKS */
+    .code-box {
+      background: #1e1e1e;
+      color: #dcdcdc;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: Consolas, monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      border: 1px solid #333;
+      margin-top: 18px;
+    }
+
+    .comment { color: #6dc26d; }
+    .cmd      { color: #9cdcfe; }
+    .str      { color: #ce9178; }
+    .key      { color: #c586c0; }
+
+  </style>
+
+</head>
+
+
+<body>
+
+<!-- SIDEBAR NAVIGATION -->
+<div class="sidebar">
+  <h2>System Administration</h2>
+  <a href="#sys-overview">System Overview</a>
+  <a href="#users">Users & Groups</a>
+  <a href="#permissions">Permissions & Ownership</a>
+  <a href="#sudo">Sudoers</a>
+  <a href="#processes">Processes & Monitoring</a>
+  <a href="#disk">Disk Management</a>
+  <a href="#lvm">LVM</a>
+  <a href="#raid">RAID</a>
+  <a href="#fstab">fstab & Automount</a>
+  <a href="#backup">Backups & Archives</a>
+  <a href="#cron">Cron Jobs</a>
+
+  <h2>Networking</h2>
+  <a href="#ip">IP & Routing</a>
+  <a href="#dns">DNS Tools</a>
+  <a href="#netplan">Netplan</a>
+  <a href="#bonding">Network Bonding</a>
+  <a href="#dhcp">DHCP Server & Client</a>
+
+  <h2>Security</h2>
+  <a href="#ssh">SSH Hardening</a>
+  <a href="#ufw">UFW Firewall</a>
+  <a href="#fail2ban">Fail2ban</a>
+  <a href="#openssl">OpenSSL Certificates</a>
+
+  <h2>Web Stack</h2>
+  <a href="#apache">Apache</a>
+  <a href="#php">PHP</a>
+  <a href="#certbot">Certbot SSL</a>
+
+  <h2>Database</h2>
+  <a href="#mysql">MySQL Installation</a>
+  <a href="#mysql-users">MySQL Users & Grants</a>
+  <a href="#mysql-backup">MySQL Backups</a>
+
+  <h2>Email Stack</h2>
+  <a href="#postfix">Postfix</a>
+  <a href="#dovecot">Dovecot</a>
+  <a href="#opendkim">OpenDKIM</a>
+  <a href="#opendmarc">OpenDMARC</a>
+  <a href="#roundcube">Roundcube</a>
+  <a href="#email-dns">DNS Records (MX, SPF, DKIM, DMARC)</a>
+  <a href="#email-test">Test Email Sending</a>
+  <a href="#email-debug">Email Troubleshooting</a>
+</div>
+
+
+
+
+<!-- MAIN CONTENT START -->
+<div class="main">
+
+  <h1 style="color:#003399;">System Administrator Full Documentation</h1>
+  <p>This documentation is an extensive guide designed for Linux system administrators.
+    It covers complete workflows including server setup, networking, security, email systems, web hosting, MySQL, and storage management.</p>
+
+  <p>Code examples are formatted in VS Code dark theme.
+    Every command includes comments, explanations, and real-world usage scenarios.</p>
+
+
+
+  <!-- ====================== -->
+  <!-- SYSTEM OVERVIEW START -->
+  <!-- ====================== -->
+  <h2 id="sys-overview" class="section-title">System Overview</h2>
+
+  <p>This section introduces fundamental tools used by system administrators to inspect, monitor, and understand the state of a Linux server. These commands are the first step when diagnosing issues or performing audits.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Show system information</span><br>
+    uname -a
+    <span class="comment"># Explanation: Shows kernel version, architecture, and OS type.
+# Used when checking compatibility or diagnosing kernel issues.</span><br><br>
+
+    <span class="comment"># Distribution details</span><br>
+    cat /etc/os-release
+    <span class="comment"># Example output: NAME="Ubuntu" VERSION="22.04 LTS"</span><br><br>
+
+    <span class="comment"># System uptime</span><br>
+    uptime
+    <span class="comment"># Example: "14:22 up 5 days, load average: 0.15, 0.20, 0.30"</span><br><br>
+
+    <span class="comment"># Hardware info</span><br>
+    lscpu
+    lsmem
+    lsblk
+    lspci
+    lsusb
+    <span class="comment"># These help identify RAM, CPU cores, PCI devices, or attached USB hardware.</span><br><br>
+
+    <span class="comment"># Disk usage summary</span><br>
+    df -h
+    <span class="comment"># Use this to ensure partitions are not full. A full disk stops MySQL, Postfix, or Apache.</span><br><br>
+
+    <span class="comment"># Memory usage</span><br>
+    free -h
+    <span class="comment"># Shows available and used RAM. High swap usage indicates low memory.</span><br><br>
+
+    <span class="comment"># List all services</span><br>
+    systemctl list-units --type=service
+    <span class="comment"># Useful to confirm which services failed.</span><br><br>
+
+  </div>
+
+
+
+  <!-- END OF PART 1 -->
+  <!-- ====================================================== -->
+  <!-- ================== USERS AND GROUPS ================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="users" class="section-title">Users and Groups</h2>
+
+  <p>This section covers user management, group administration, and best practices for secure account handling. System administrators use these commands daily when onboarding users, assigning roles, or securing directories.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Create a new user (with home directory)</span><br>
+    sudo adduser johndoe
+    <span class="comment"># Prompts for password and creates /home/johndoe
+# Use this for normal user accounts.</span><br><br>
+
+    <span class="comment"># Create a system user (no shell, no home)</span><br>
+    sudo useradd -r -s /usr/sbin/nologin mysqluser
+    <span class="comment"># Used for system services like MySQL, Postfix, web apps.</span><br><br>
+
+    <span class="comment"># Change user shell</span><br>
+    sudo chsh -s /bin/bash johndoe<br><br>
+
+    <span class="comment"># Assign user to a group</span><br>
+    sudo usermod -aG sudo johndoe
+    <span class="comment"># Adds johndoe to sudoers without removing other groups.</span><br><br>
+
+    <span class="comment"># List all users</span><br>
+    cut -d: -f1 /etc/passwd<br><br>
+
+    <span class="comment"># List groups</span><br>
+    cut -d: -f1 /etc/group<br><br>
+
+    <span class="comment"># Delete a user (keep home folder)</span><br>
+    sudo userdel johndoe<br><br>
+
+    <span class="comment"># Delete a user with home folder</span><br>
+    sudo userdel -r johndoe<br><br>
+
+    <span class="comment"># Switch to another user account</span><br>
+    su - johndoe<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ============= PERMISSIONS AND OWNERSHIP ============== -->
+  <!-- ====================================================== -->
+
+  <h2 id="permissions" class="section-title">Permissions and Ownership</h2>
+
+  <p>Permissions determine who can read, write, or execute files and directories. Misconfiguration can cause service failures (Apache, MySQL, Postfix). Understanding these is essential for security.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Viewing permissions</span><br>
+    ls -l
+    <span class="comment"># Example: -rw-r--r-- 1 root root 1200 file.txt
+# Meaning: owner=rw, group=r, others=r</span><br><br>
+
+    <span class="comment"># Change owner</span><br>
+    sudo chown johndoe:johndoe file.txt<br><br>
+
+    <span class="comment"># Recursive ownership change</span><br>
+    sudo chown -R www-data:www-data /var/www/html
+    <span class="comment"># Required for Apache document root.</span><br><br>
+
+    <span class="comment"># Change permissions</span><br>
+    chmod 755 script.sh
+    chmod 644 config.php
+    <span class="comment"># 755 = rwx r-x r-x (execute allowed)
+# 644 = rw- r-- r-- (common for configs)</span><br><br>
+
+    <span class="comment"># Give execute permission</span><br>
+    chmod +x run.sh<br><br>
+
+    <span class="comment"># Remove write permissions from others</span><br>
+    chmod o-w file.txt<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ======================= SUDOERS ======================= -->
+  <!-- ====================================================== -->
+
+  <h2 id="sudo" class="section-title">Sudoers Configuration</h2>
+
+  <p>Sudo allows controlled privilege escalation. Editing sudoers incorrectly can lock you out entirely, so always use <b>visudo</b>, which checks syntax.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Edit sudoers safely</span><br>
+    sudo visudo<br><br>
+
+    <span class="comment"># Allow user full sudo access</span><br>
+    johndoe ALL=(ALL) ALL<br><br>
+
+    <span class="comment"># Allow user to run specific command</span><br>
+    johndoe ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart apache2<br><br>
+
+    <span class="comment"># Allow group sudo privileges</span><br>
+    %support ALL=(ALL) ALL<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ================== PROCESS MONITORING ================= -->
+  <!-- ====================================================== -->
+
+  <h2 id="processes" class="section-title">Processes, Logs, and System Monitoring</h2>
+
+  <p>Process management is essential for diagnosing high CPU, memory leaks, or services failing. Linux provides many tools for system observation.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># List running processes</span><br>
+    ps aux<br><br>
+
+    <span class="comment"># Real-time process view</span><br>
+    top<br>
+    htop <span class="comment"># install: sudo apt install htop</span><br><br>
+
+    <span class="comment"># Detailed kernel messages</span><br>
+    dmesg | less<br><br>
+
+    <span class="comment"># Follow system logs live</span><br>
+    sudo journalctl -f<br><br>
+
+    <span class="comment"># Service status</span><br>
+    sudo systemctl status apache2<br>
+    sudo systemctl status mysql<br><br>
+
+    <span class="comment"># Restart failed services</span><br>
+    sudo systemctl restart postfix<br><br>
+
+    <span class="comment"># Enable services on boot</span><br>
+    sudo systemctl enable dovecot<br><br>
+
+    <span class="comment"># Show failed units</span><br>
+    systemctl --failed<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ==================== DISK MANAGEMENT ================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="disk" class="section-title">Disk Management</h2>
+
+  <p>Disk operations include creating partitions, formatting, mounting, or preparing disks for LVM or RAID. These commands must be used carefully because mistakes can destroy data.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># List disks and partitions</span><br>
+    lsblk
+    fdisk -l<br><br>
+
+    <span class="comment"># Create or edit a partition</span><br>
+    sudo fdisk /dev/sdb
+    <span class="comment"># Commands: n = new partition, d = delete, w = write changes</span><br><br>
+
+    <span class="comment"># Format a disk</span><br>
+    sudo mkfs.ext4 /dev/sdb1
+    sudo mkfs.xfs /dev/sdb1<br><br>
+
+    <span class="comment"># Mount a filesystem</span><br>
+    sudo mount /dev/sdb1 /mnt/data<br><br>
+
+    <span class="comment"># List mounted filesystems</span><br>
+    mount | grep /mnt<br><br>
+
+    <span class="comment"># Unmount a disk</span><br>
+    sudo umount /mnt/data<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== LVM ======================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="lvm" class="section-title">Logical Volume Management (LVM)</h2>
+
+  <p>LVM allows flexible disk management: resizing storage without unmounting, adding new disks easily, or creating snapshots. Essential for servers.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># 1. Create Physical Volume</span><br>
+    sudo pvcreate /dev/sdb1<br><br>
+
+    <span class="comment"># 2. Create Volume Group</span><br>
+    sudo vgcreate datavg /dev/sdb1<br><br>
+
+    <span class="comment"># 3. Create Logical Volume</span><br>
+    sudo lvcreate -L 50G -n datalv datavg<br><br>
+
+    <span class="comment"># 4. Format LV</span><br>
+    sudo mkfs.ext4 /dev/datavg/datalv<br><br>
+
+    <span class="comment"># 5. Mount LV</span><br>
+    sudo mkdir /data<br>
+    sudo mount /dev/datavg/datalv /data<br><br>
+
+    <span class="comment"># Extend LV and filesystem (online)</span><br>
+    sudo lvextend -L +20G /dev/datavg/datalv
+    sudo resize2fs /dev/datavg/datalv
+    <span class="comment"># Now LV grows by 20 GB without downtime.</span><br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== RAID ======================= -->
+  <!-- ====================================================== -->
+
+  <h2 id="raid" class="section-title">RAID (mdadm)</h2>
+
+  <p>RAID increases redundancy or speed. RAID1 mirrors disks, RAID5 provides parity, RAID0 improves performance but no redundancy.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install RAID tools</span><br>
+    sudo apt install mdadm -y<br><br>
+
+    <span class="comment"># Create RAID1 (mirror)</span><br>
+    sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdb1 /dev/sdc1<br><br>
+
+    <span class="comment"># Create RAID5</span><br>
+    sudo mdadm --create /dev/md0 --level=5 --raid-devices=3 /dev/sd{b1,c1,d1}<br><br>
+
+    <span class="comment"># Check RAID status</span><br>
+    cat /proc/mdstat<br><br>
+
+    <span class="comment"># Save RAID config</span><br>
+    sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== FSTAB ====================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="fstab" class="section-title">fstab & Automounting</h2>
+
+  <p>The <b>/etc/fstab</b> file ensures filesystems mount automatically at boot. Mistakes here can prevent the server from booting.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Find UUID of a disk</span><br>
+    sudo blkid<br><br>
+
+    <span class="comment"># Sample fstab entry</span><br>
+    <span class="comment"># /dev/sdb1 mounted to /data with ext4 filesystem</span><br>
+    UUID=xxxx-xxxx /data ext4 defaults 0 2<br><br>
+
+    <span class="comment"># Test fstab for errors</span><br>
+    sudo mount -a
+    <span class="comment"># If no output, fstab is correct.</span><br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ====================== BACKUPS ======================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="backup" class="section-title">Backups & Archiving</h2>
+
+  <p>Backups are essential for server reliability. Administrators use tar, zip, rsync, or mysqldump to protect data.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Create archive</span><br>
+    tar -czvf backup.tar.gz /var/www/html<br><br>
+
+    <span class="comment"># Extract archive</span><br>
+    tar -xzvf backup.tar.gz<br><br>
+
+    <span class="comment"># Sync directories (incremental backup)</span><br>
+    rsync -avz /var/www/ /backup/www/<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ======================== CRON JOBS ==================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="cron" class="section-title">Cron Jobs</h2>
+
+  <p>Cron automates repetitive tasks like backups, updates, log rotation, and certificate renewal.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Edit cron jobs</span><br>
+    crontab -e<br><br>
+
+    <span class="comment"># Cron format:</span><br>
+    <span class="comment"># minute hour day month weekday command</span><br>
+
+    <span class="comment"># Daily backup at 1 AM</span><br>
+    0 1 * * * /usr/bin/rsync -av /data /backup/data<br><br>
+
+    <span class="comment"># Weekly apt updates</span><br>
+    0 4 * * 0 sudo apt update && sudo apt upgrade -y<br><br>
+
+  </div>
+
+  <!-- END OF PART 2 -->
+  <!-- ====================================================== -->
+  <!-- ======================= IP & ROUTING ================= -->
+  <!-- ====================================================== -->
+
+  <h2 id="ip" class="section-title">IP Configuration & Routing</h2>
+
+  <p>System administrators frequently configure network interfaces, diagnose connectivity issues, or modify routing tables. Below are the foundational commands with full explanations.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># View all IP addresses</span><br>
+    ip addr show
+    <span class="comment"># Shows interface names, MAC addresses, assigned IPs, and link status.</span><br><br>
+
+    <span class="comment"># Assign temporary IP to interface (lost after reboot)</span><br>
+    sudo ip addr add 192.168.1.50/24 dev enp0s3<br><br>
+
+    <span class="comment"># Delete assigned IP</span><br>
+    sudo ip addr del 192.168.1.50/24 dev enp0s3<br><br>
+
+    <span class="comment"># Bring interface up or down</span><br>
+    sudo ip link set enp0s3 up
+    sudo ip link set enp0s3 down<br><br>
+
+    <span class="comment"># Display routing table</span><br>
+    ip route
+    <span class="comment"># Shows default gateway and route priorities.</span><br><br>
+
+    <span class="comment"># Add new route</span><br>
+    sudo ip route add 10.0.0.0/24 via 192.168.1.1 dev enp0s3<br><br>
+
+    <span class="comment"># Delete route</span><br>
+    sudo ip route del 10.0.0.0/24<br><br>
+
+    <span class="comment"># Test connectivity</span><br>
+    ping -c 4 google.com
+    ping -c 4 8.8.8.8 <span class="comment"># DNS-independent test</span><br><br>
+
+    <span class="comment"># Trace path to a remote server</span><br>
+    traceroute google.com<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== DNS ======================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="dns" class="section-title">DNS Tools</h2>
+
+  <p>DNS resolution is crucial for communication between services. Administrators need to test DNS records, MX mail routing, or troubleshoot name failures.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># DNS lookup</span><br>
+    dig example.com<br><br>
+
+    <span class="comment"># Query specific record types</span><br>
+    dig MX example.com
+    dig A example.com
+    dig TXT example.com<br><br>
+
+    <span class="comment"># Reverse lookup</span><br>
+    dig -x 8.8.8.8<br><br>
+
+    <span class="comment"># Query using specific DNS server</span><br>
+    dig @8.8.8.8 example.com<br><br>
+
+    <span class="comment"># Simplified DNS query</span><br>
+    nslookup example.com<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ======================== NETPLAN ====================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="netplan" class="section-title">Netplan Configuration</h2>
+
+  <p>Netplan controls permanent network configuration in Ubuntu Server. It processes YAML configuration files and applies them to systemd-networkd or NetworkManager.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Edit main netplan file</span><br>
+    sudo nano /etc/netplan/50-cloud-init.yaml<br><br>
+
+    <span class="comment"># Sample static IP configuration</span><br>
+    <span class="key">network:</span><br>
+    &nbsp;&nbsp;version: 2<br>
+    &nbsp;&nbsp;renderer: networkd<br>
+    &nbsp;&nbsp;ethernets:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;enp0s3:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dhcp4: no<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;addresses: [192.168.1.10/24]<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gateway4: 192.168.1.1<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nameservers:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;addresses: [8.8.8.8, 1.1.1.1]<br><br>
+
+    <span class="comment"># Apply configuration</span><br>
+    sudo netplan apply<br><br>
+
+    <span class="comment"># Validate configuration syntax</span><br>
+    sudo netplan try<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ===================== NETWORK BONDING ================= -->
+  <!-- ====================================================== -->
+
+  <h2 id="bonding" class="section-title">Network Bonding (Interface Teaming)</h2>
+
+  <p>Bonding provides redundancy or increased bandwidth by combining multiple network interfaces into a single logical interface.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install bonding tools</span><br>
+    sudo apt install ifenslave<br><br>
+
+    <span class="comment"># Sample Netplan bonding configuration</span><br>
+    <span class="key">network:</span><br>
+    &nbsp;&nbsp;version: 2<br>
+    &nbsp;&nbsp;renderer: networkd<br>
+    &nbsp;&nbsp;bonds:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;bond0:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;interfaces: [enp0s3, enp0s8]<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parameters:<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mode: active-backup<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;primary: enp0s3<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dhcp4: yes<br><br>
+
+    <span class="comment"># Apply bonding</span><br>
+    sudo netplan apply<br><br>
+
+    <span class="comment"># Check bonding status</span><br>
+    cat /proc/net/bonding/bond0<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== DHCP ======================= -->
+  <!-- ====================================================== -->
+
+  <h2 id="dhcp" class="section-title">DHCP Server & Client</h2>
+
+  <p>DHCP automatically assigns IP addresses. System administrators configure DHCP servers for internal networks or troubleshoot client issues.</p>
+
+  <h3>DHCP Server (isc-dhcp-server)</h3>
+
+  <div class="code-box">
+
+    <span class="comment"># Install DHCP server</span><br>
+    sudo apt install isc-dhcp-server -y<br><br>
+
+    <span class="comment"># Edit DHCP configuration</span><br>
+    sudo nano /etc/dhcp/dhcpd.conf<br><br>
+
+    <span class="comment"># Example DHCP pool</span><br>
+    subnet 192.168.1.0 netmask 255.255.255.0 {<br>
+    &nbsp;&nbsp;range 192.168.1.100 192.168.1.200;<br>
+    &nbsp;&nbsp;option routers 192.168.1.1;<br>
+    &nbsp;&nbsp;option domain-name-servers 8.8.8.8, 1.1.1.1;<br>
+    }<br><br>
+
+    <span class="comment"># Enable interface</span><br>
+    sudo nano /etc/default/isc-dhcp-server
+    INTERFACESv4="enp0s3"<br><br>
+
+    <span class="comment"># Restart service</span><br>
+    sudo systemctl restart isc-dhcp-server<br>
+    sudo systemctl status isc-dhcp-server<br><br>
+
+  </div>
+
+  <h3>DHCP Client Tools</h3>
+
+  <div class="code-box">
+
+    <span class="comment"># Renew DHCP lease</span><br>
+    sudo dhclient -r
+    sudo dhclient<br><br>
+
+    <span class="comment"># View DHCP leases</span><br>
+    cat /var/lib/dhcp/dhclient.leases<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ======================= SSH HARDENING ================= -->
+  <!-- ====================================================== -->
+
+  <h2 id="ssh" class="section-title">SSH Hardening</h2>
+
+  <p>SSH is the primary admin access method. Hardening prevents unauthorized access and brute-force attacks.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Check SSH status</span><br>
+    sudo systemctl status ssh<br><br>
+
+    <span class="comment"># Edit SSH config</span><br>
+    sudo nano /etc/ssh/sshd_config<br><br>
+
+    <span class="comment"># Recommended security settings</span><br>
+    Port 2222
+    PermitRootLogin no
+    PasswordAuthentication no
+    PubkeyAuthentication yes
+    AllowUsers johndoe sysadmin<br><br>
+
+    <span class="comment"># Restart SSH</span><br>
+    sudo systemctl restart ssh<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== UFW ======================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="ufw" class="section-title">UFW Firewall</h2>
+
+  <p>UFW provides simple syntax for firewall rule configuration. Essential for restricting access to services.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Default policies</span><br>
+    sudo ufw default deny incoming
+    sudo ufw default allow outgoing<br><br>
+
+    <span class="comment"># Allow essential ports</span><br>
+    sudo ufw allow 22/tcp     <span class="comment"># SSH</span><br>
+    sudo ufw allow 80/tcp     <span class="comment"># HTTP</span><br>
+    sudo ufw allow 443/tcp    <span class="comment"># HTTPS</span><br>
+    sudo ufw allow 25/tcp     <span class="comment"># SMTP</span><br>
+    sudo ufw allow 587/tcp    <span class="comment"># Submission</span><br>
+    sudo ufw allow 993/tcp    <span class="comment"># IMAP SSL</span><br><br>
+
+    <span class="comment"># Deny specific IP</span><br>
+    sudo ufw deny from 10.0.0.55<br><br>
+
+    <span class="comment"># Enable firewall</span><br>
+    sudo ufw enable<br><br>
+
+    <span class="comment"># Check rules</span><br>
+    sudo ufw status numbered<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================= FAIL2BAN ==================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="fail2ban" class="section-title">Fail2ban Intrusion Prevention</h2>
+
+  <p>Fail2ban blocks repeated unauthorized login attempts. It is vital for SSH, Postfix, and Apache brute-force protection.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install fail2ban</span><br>
+    sudo apt install fail2ban -y<br><br>
+
+    <span class="comment"># Create local jail override file</span><br>
+    sudo nano /etc/fail2ban/jail.local<br><br>
+
+    <span class="comment"># Recommended configuration</span><br>
+    [sshd]<br>
+    enabled = true<br>
+    port = 2222<br>
+    filter = sshd<br>
+    logpath = /var/log/auth.log<br>
+    maxretry = 5<br><br>
+
+    <span class="comment"># Restart fail2ban</span><br>
+    sudo systemctl restart fail2ban<br><br>
+
+    <span class="comment"># View banned IPs</span><br>
+    sudo fail2ban-client status sshd<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== OPENSSL ==================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="openssl" class="section-title">OpenSSL Certificate Management</h2>
+
+  <p>OpenSSL creates private keys, CSRs, and self-signed certificates. Used for HTTPS, SMTP, IMAP, and internal secure communication.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Generate a private key</span><br>
+    openssl genrsa -out server.key 2048<br><br>
+
+    <span class="comment"># Generate a certificate signing request</span><br>
+    openssl req -new -key server.key -out server.csr<br>
+    <span class="comment"># Fill in domain details: CN = example.com</span><br><br>
+
+    <span class="comment"># Self-signed certificate (valid 1 year)</span><br>
+    openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt<br><br>
+
+    <span class="comment"># View certificate details</span><br>
+    openssl x509 -in server.crt -noout -text<br><br>
+
+  </div>
+
+  <!-- END OF PART 3 -->
+  <!-- ====================================================== -->
+  <!-- ========================= APACHE ====================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="apache" class="section-title">Apache Web Server</h2>
+
+  <p>Apache hosts websites, APIs, and applications. System administrators configure virtual hosts, SSL certificates, and document roots.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install Apache</span><br>
+    sudo apt update<br>
+    sudo apt install apache2 -y<br><br>
+
+    <span class="comment"># Verify Apache status</span><br>
+    sudo systemctl status apache2<br><br>
+
+    <span class="comment"># Enable Apache modules</span><br>
+    sudo a2enmod rewrite
+    sudo a2enmod ssl
+    sudo systemctl restart apache2<br><br>
+
+    <span class="comment"># Create a new site configuration</span><br>
+    sudo nano /etc/apache2/sites-available/example.conf<br><br>
+
+    <span class="comment"># Sample Virtual Host</span><br>
+    &lt;VirtualHost *:80&gt;<br>
+    &nbsp;&nbsp;ServerName example.com<br>
+    &nbsp;&nbsp;ServerAlias www.example.com<br>
+    &nbsp;&nbsp;DocumentRoot /var/www/example<br>
+    &nbsp;&nbsp;ErrorLog ${APACHE_LOG_DIR}/example-error.log<br>
+    &nbsp;&nbsp;CustomLog ${APACHE_LOG_DIR}/example-access.log combined<br>
+    &lt;/VirtualHost&gt;<br><br>
+
+    <span class="comment"># Enable site</span><br>
+    sudo a2ensite example.conf<br>
+    sudo systemctl reload apache2<br><br>
+
+    <span class="comment"># Disable default site</span><br>
+    sudo a2dissite 000-default.conf<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ============================ PHP ====================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="php" class="section-title">PHP Installation & Modules</h2>
+
+  <p>PHP is required by many applications including Roundcube, WordPress, Laravel, moodle, etc.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install PHP and common modules</span><br>
+    sudo apt install php php-cli php-mysql php-curl php-gd php-xml php-mbstring php-intl php-zip libapache2-mod-php -y<br><br>
+
+    <span class="comment"># Check PHP version</span><br>
+    php -v<br><br>
+
+    <span class="comment"># Restart Apache to load modules</span><br>
+    sudo systemctl restart apache2<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ============================ SSL ====================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="certbot" class="section-title">SSL Certificates with Certbot (Let's Encrypt)</h2>
+
+  <p>SSL encrypts communication for HTTPS, IMAP, SMTP, and Roundcube. Certbot provides free, automated certificates.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install Certbot</span><br>
+    sudo apt install certbot python3-certbot-apache -y<br><br>
+
+    <span class="comment"># Request an SSL certificate</span><br>
+    sudo certbot --apache -d example.com -d www.example.com<br><br>
+
+    <span class="comment"># Certificate location</span><br>
+    /etc/letsencrypt/live/example.com/<br><br>
+
+    <span class="comment"># Test renewal</span><br>
+    sudo certbot renew --dry-run<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- =========================== MYSQL ===================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="mysql" class="section-title">MySQL Installation</h2>
+
+  <p>MySQL powers databases for PHP applications. Correct configuration ensures security and performance.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install MySQL</span><br>
+    sudo apt install mysql-server -y<br><br>
+
+    <span class="comment"># Secure installation</span><br>
+    sudo mysql_secure_installation<br><br>
+
+    <span class="comment"># Log in as root</span><br>
+    sudo mysql<br><br>
+
+    <span class="comment"># Create database</span><br>
+    CREATE DATABASE exampledb;<br><br>
+
+    <span class="comment"># Create user with password</span><br>
+    CREATE USER 'exampleuser'@'localhost' IDENTIFIED BY 'StrongPass123!';<br><br>
+
+    <span class="comment"># Grant privileges</span><br>
+    GRANT ALL PRIVILEGES ON exampledb.* TO 'exampleuser'@'localhost';<br>
+    FLUSH PRIVILEGES;<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ======================= MYSQL BACKUPS ================= -->
+  <!-- ====================================================== -->
+
+  <h2 id="mysql-backup" class="section-title">MySQL Backups</h2>
+
+  <p>Backups protect against corruption, accidental deletion, and hardware failures.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Export database</span><br>
+    mysqldump -u root -p exampledb > exampledb.sql<br><br>
+
+    <span class="comment"># Import database</span><br>
+    mysql -u root -p exampledb < exampledb.sql<br><br>
+
+    <span class="comment"># Scheduled backup via cron</span><br>
+    0 2 * * * mysqldump exampledb > /backup/exampledb-$(date +\%F).sql<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- =========================== POSTFIX =================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="postfix" class="section-title">Postfix (SMTP Server)</h2>
+
+  <p>Postfix is the SMTP server used to send outgoing email. Below is the full installation, configuration, and explanation for a production mail server.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install Postfix</span><br>
+    sudo apt install postfix -y<br><br>
+
+    <span class="comment"># Select configuration type:</span><br>
+    <span class="comment"># Internet Site</span><br><br>
+
+    <span class="comment"># Configure main Postfix settings</span><br>
+    sudo nano /etc/postfix/main.cf<br><br>
+
+    <span class="comment"># Recommended settings</span><br>
+    myhostname = mail.example.com<br>
+    mydomain = example.com<br>
+    myorigin = /etc/mailname<br>
+    inet_interfaces = all<br>
+    mydestination = \$myhostname, localhost.\$mydomain, localhost<br>
+    home_mailbox = Maildir/<br>
+    smtpd_tls_cert_file=/etc/letsencrypt/live/example.com/fullchain.pem<br>
+    smtpd_tls_key_file=/etc/letsencrypt/live/example.com/privkey.pem<br>
+    smtpd_use_tls=yes<br>
+    smtp_tls_security_level = may<br><br>
+
+    <span class="comment"># Restart Postfix</span><br>
+    sudo systemctl restart postfix<br>
+    sudo systemctl status postfix<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== DOVECOT ==================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="dovecot" class="section-title">Dovecot (IMAP/POP3 Authentication)</h2>
+
+  <p>Dovecot allows users to receive email using IMAP/POP3. It works together with Postfix to store and retrieve messages.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install Dovecot</span><br>
+    sudo apt install dovecot-core dovecot-imapd dovecot-pop3d -y<br><br>
+
+    <span class="comment"># Use Maildir format</span><br>
+    sudo nano /etc/dovecot/conf.d/10-mail.conf<br><br>
+
+    mail_location = maildir:~/Maildir<br><br>
+
+    <span class="comment"># Enable SSL for IMAP</span><br>
+    sudo nano /etc/dovecot/conf.d/10-ssl.conf<br><br>
+
+    ssl = yes<br>
+    ssl_cert = </etc/letsencrypt/live/example.com/fullchain.pem><br>
+    ssl_key = </etc/letsencrypt/live/example.com/privkey.pem><br><br>
+
+    <span class="comment"># Restart Dovecot</span><br>
+    sudo systemctl restart dovecot<br>
+    sudo systemctl status dovecot<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== OPENDKIM =================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="opendkim" class="section-title">OpenDKIM</h2>
+
+  <p>OpenDKIM digitally signs outgoing mail so receiving servers trust your mail. Prevents spam and spoofing alerts.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install OpenDKIM</span><br>
+    sudo apt install opendkim opendkim-tools -y<br><br>
+
+    <span class="comment"># Configure OpenDKIM</span><br>
+    sudo nano /etc/opendkim.conf<br><br>
+
+    Syslog                  yes<br>
+    UMask                   002<br>
+    Mode                    sv<br>
+    KeyTable                /etc/opendkim/key.table<br>
+    SigningTable            /etc/opendkim/signing.table<br>
+    ExternalIgnoreList      /etc/opendkim/trusted.hosts<br>
+    InternalHosts           /etc/opendkim/trusted.hosts<br><br>
+
+    <span class="comment"># Create signing directory</span><br>
+    sudo mkdir -p /etc/opendkim/keys/example.com<br><br>
+
+    <span class="comment"># Generate DKIM key</span><br>
+    sudo opendkim-genkey -D /etc/opendkim/keys/example.com/ -d example.com -s mail<br>
+    sudo chown opendkim:opendkim /etc/opendkim/keys/example.com/*<br><br>
+
+    <span class="comment"># Add key to KeyTable</span><br>
+    mail._domainkey.example.com example.com:mail:/etc/opendkim/keys/example.com/mail.private<br><br>
+
+    <span class="comment"># Add signing entry</span><br>
+    example.com mail._domainkey.example.com<br><br>
+
+    <span class="comment"># Restart service</span><br>
+    sudo systemctl restart opendkim opendkim.service<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== OPENDMARC ================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="opendmarc" class="section-title">OpenDMARC</h2>
+
+  <p>OpenDMARC evaluates incoming email authenticity using SPF and DKIM. Helps prevent spoofing and phishing.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install OpenDMARC</span><br>
+    sudo apt install opendmarc -y<br><br>
+
+    <span class="comment"># Configure OpenDMARC</span><br>
+    sudo nano /etc/opendmarc.conf<br><br>
+
+    AuthservID mail.example.com<br>
+    TrustedAuthservIDs mail.example.com<br>
+    Socket inet:8893@localhost<br><br>
+
+    <span class="comment"># Restart OpenDMARC</span><br>
+    sudo systemctl restart opendmarc<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ========================== ROUNDCUBE ================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="roundcube" class="section-title">Roundcube Webmail</h2>
+
+  <p>Roundcube provides a full-featured webmail client for IMAP.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Install Roundcube</span><br>
+    sudo apt install roundcube roundcube-core roundcube-mysql -y<br><br>
+
+    <span class="comment"># Apache integration</span><br>
+    sudo a2enconf roundcube<br>
+    sudo systemctl reload apache2<br><br>
+
+    <span class="comment"># Set Roundcube config</span><br>
+    sudo nano /etc/roundcube/config.inc.php<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ============================ DNS ====================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="email-dns" class="section-title">DNS Records for Email (MX, SPF, DKIM, DMARC)</h2>
+
+  <p>Correct DNS configuration is mandatory for mail delivery. Most issues come from missing or incorrect DNS records.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># MX Record</span><br>
+    example.com.    3600    IN    MX    10 mail.example.com.<br><br>
+
+    <span class="comment"># SPF Record</span><br>
+    example.com. IN TXT "v=spf1 mx a ip4:YOUR_SERVER_IP ~all"<br><br>
+
+    <span class="comment"># DKIM Record</span><br>
+    mail._domainkey.example.com. IN TXT "v=DKIM1; k=rsa; p=PUBLIC_KEY_HERE"<br><br>
+
+    <span class="comment"># DMARC Record</span><br>
+    _dmarc.example.com. IN TXT "v=DMARC1; p=quarantine; rua=mailto:admin@example.com"<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ======================== TEST EMAIL =================== -->
+  <!-- ====================================================== -->
+
+  <h2 id="email-test" class="section-title">Testing Email Delivery</h2>
+
+  <p>These tests verify that mail successfully leaves the SMTP server and arrives at its destination.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Send simple test email via Postfix</span><br>
+    echo "Test body" | mail -s "Test Subject" user@example.com<br><br>
+
+    <span class="comment"># Debug email</span><br>
+    echo -e "Subject: Test\nHello world" | sendmail -v user@example.com<br><br>
+
+    <span class="comment"># Test SMTP port</span><br>
+    telnet mail.example.com 25<br><br>
+
+  </div>
+
+
+
+  <!-- ====================================================== -->
+  <!-- ====================== TROUBLESHOOTING =============== -->
+  <!-- ====================================================== -->
+
+  <h2 id="email-debug" class="section-title">Email Troubleshooting & Logs</h2>
+
+  <p>Logs provide clues when messages fail to send or authenticate.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># View mail log</span><br>
+    sudo tail -f /var/log/mail.log<br><br>
+
+    <span class="comment"># Inspect queued messages</span><br>
+    sudo postqueue -p<br><br>
+
+    <span class="comment"># View specific message</span><br>
+    sudo postcat -q QUEUE_ID<br><br>
+
+    <span class="comment"># Check Dovecot authentication</span><br>
+    sudo journalctl -u dovecot -n 50<br><br>
+
+    <span class="comment"># Check Postfix errors</span><br>
+    sudo journalctl -u postfix -n 50<br><br>
+
+  </div>
+
+
+
+  <!-- END OF PART 4 -->
+</div> <!-- end main -->
+</body>
+</html>
