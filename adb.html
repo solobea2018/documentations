@@ -73,6 +73,26 @@
     .cmd { color: #9cdcfe; }
     .str { color: #ce9178; }
 
+    /* PRINT MODE */
+    @media print {
+
+      /* Hide sidebar completely */
+      .sidebar {
+        display: none !important;
+      }
+
+      /* Let main take full width */
+      .main {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      /* Optional: remove background colors for cleaner print */
+      body {
+        background: #fff !important;
+      }
+
+    }
   </style>
 </head>
 
