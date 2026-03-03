@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- SIDEBAR NAVIGATION -->
+<div class="sidebar">
+  <h2>System Administration</h2>
+  <a href="#sys-overview">System Overview</a>
+
+</div>
+
+<div class="main">
+  <h2 id="aws" class="section-title">AWS EC2 & Security Groups (Mini Cheat Sheet)</h2>
+
+  <p>This section contains essential AWS CLI commands for managing EC2 instances, security groups, networking, and account verification. Designed for fast cloud administration.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># ================= AWS CONFIGURATION =================</span><br>
+    aws configure list<br>
+    <span class="comment"># Show current Access Key, Secret, Region</span><br><br>
+
+    aws sts get-caller-identity<br>
+    <span class="comment"># Confirm which AWS account is active</span><br><br>
+
+    aws configure set region af-south-1<br>
+    <span class="comment"># Change default region safely (does NOT overwrite keys)</span><br><br>
+
+
+    <span class="comment"># ================= EC2 MANAGEMENT =================</span><br>
+
+    aws ec2 describe-instances<br>
+    <span class="comment"># List all EC2 instances (current region)</span><br><br>
+
+    aws ec2 describe-instances --filters Name=instance-state-name,Values=running<br>
+    <span class="comment"># Show only running instances</span><br><br>
+
+    aws ec2 start-instances --instance-ids i-xxxxxxx<br>
+    <span class="comment"># Start instance</span><br><br>
+
+    aws ec2 stop-instances --instance-ids i-xxxxxxx<br>
+    <span class="comment"># Stop instance</span><br><br>
+
+    aws ec2 reboot-instances --instance-ids i-xxxxxxx<br>
+    <span class="comment"># Reboot instance</span><br><br>
+
+    aws ec2 terminate-instances --instance-ids i-xxxxxxx<br>
+    <span class="comment"># Permanently delete instance (CANNOT undo)</span><br><br>
+
+    aws ec2 describe-instances --instance-ids i-xxxxxxx \<br>
+    --query "Reservations[*].Instances[*].PublicIpAddress" --output text<br>
+    <span class="comment"># Get public IP of instance</span><br><br>
+
+
+    <span class="comment"># ================= SECURITY GROUPS =================</span><br>
+
+    aws ec2 describe-security-groups<br>
+    <span class="comment"># List all security groups</span><br><br>
+
+    aws ec2 describe-security-groups --group-ids sg-xxxxxxx \<br>
+    --query "SecurityGroups[*].IpPermissions"<br>
+    <span class="comment"># Show open inbound ports</span><br><br>
+
+    aws ec2 create-security-group \<br>
+    --group-name my-sg \<br>
+    --description "My Security Group"<br>
+    <span class="comment"># Create new security group</span><br><br>
+
+
+    <span class="comment"># ================= OPEN PORTS =================</span><br>
+
+    aws ec2 authorize-security-group-ingress \<br>
+    --group-id sg-xxxxxxx \<br>
+    --protocol tcp --port 80 --cidr 0.0.0.0/0<br>
+    <span class="comment"># Allow HTTP from anywhere</span><br><br>
+
+    aws ec2 authorize-security-group-ingress \<br>
+    --group-id sg-xxxxxxx \<br>
+    --protocol tcp --port 443 --cidr 0.0.0.0/0<br>
+    <span class="comment"># Allow HTTPS from anywhere</span><br><br>
+
+    aws ec2 authorize-security-group-ingress \<br>
+    --group-id sg-xxxxxxx \<br>
+    --protocol tcp --port 22 --cidr YOUR_IP/32<br>
+    <span class="comment"># Allow SSH only from your IP (recommended)</span><br><br>
+
+
+    <span class="comment"># ================= REMOVE RULE =================</span><br>
+
+    aws ec2 revoke-security-group-ingress \<br>
+    --group-id sg-xxxxxxx \<br>
+    --protocol tcp --port 80 --cidr 0.0.0.0/0<br>
+    <span class="comment"># Remove HTTP access</span><br><br>
+
+
+    <span class="comment"># ================= REGIONS =================</span><br>
+
+    aws ec2 describe-regions<br>
+    <span class="comment"># List all AWS regions</span><br><br>
+
+    aws ec2 describe-instances --region af-south-1<br>
+    <span class="comment"># Query a specific region manually</span><br><br>
+
+
+    <span class="comment"># ================= TABLE VIEW =================</span><br>
+
+    aws ec2 describe-instances \<br>
+    --query "Reservations[*].Instances[*].[InstanceId,State.Name,PublicIpAddress]" \<br>
+    --output table<br>
+    <span class="comment"># Clean table output for quick overview</span><br><br>
+
+  </div>
+</div>
+
+</body>
+</html>
