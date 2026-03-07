@@ -422,22 +422,108 @@
 
   <h2 id="cron" class="section-title">Cron Jobs</h2>
 
-  <p>Cron automates repetitive tasks like backups, updates, log rotation, and certificate renewal.</p>
+  <p>
+    Cron automates repetitive tasks like backups, updates, log rotation, certificate renewal,
+    database dumps, cache clearing, and monitoring scripts. It runs commands automatically
+    at scheduled times based on defined intervals.
+  </p>
+
+  <p>
+    Each cron job consists of five time fields followed by the command to execute.
+  </p>
 
   <div class="code-box">
 
-    <span class="comment"># Edit cron jobs</span><br>
+    <span class="comment"># Edit current user's cron jobs</span><br>
     crontab -e<br><br>
 
+    <span class="comment"># View existing cron jobs</span><br>
+    crontab -l<br><br>
+
+    <span class="comment"># Remove all cron jobs</span><br>
+    crontab -r<br><br>
+
     <span class="comment"># Cron format:</span><br>
-    <span class="comment"># minute hour day month weekday command</span><br>
+    <span class="comment"># ┌───────────── minute (0 - 59)</span><br>
+    <span class="comment"># │ ┌─────────── hour (0 - 23)</span><br>
+    <span class="comment"># │ │ ┌───────── day of month (1 - 31)</span><br>
+    <span class="comment"># │ │ │ ┌─────── month (1 - 12)</span><br>
+    <span class="comment"># │ │ │ │ ┌───── day of week (0 - 7) (Sunday=0 or 7)</span><br>
+    <span class="comment"># │ │ │ │ │</span><br>
+    <span class="comment"># * * * * * command_to_execute</span><br><br>
+
+    <span class="comment"># Special characters:</span><br>
+    <span class="comment"># *  → every value</span><br>
+    <span class="comment"># */5 → every 5 units</span><br>
+    <span class="comment"># 1-5 → range</span><br>
+    <span class="comment"># 1,15 → specific values</span><br><br>
+
+    <span class="comment"># Run every minute (testing)</span><br>
+    * * * * * /home/user/test.sh<br><br>
 
     <span class="comment"># Daily backup at 1 AM</span><br>
     0 1 * * * /usr/bin/rsync -av /data /backup/data<br><br>
 
-    <span class="comment"># Weekly apt updates</span><br>
+    <span class="comment"># Every 5 minutes</span><br>
+    */5 * * * * /usr/bin/php /var/www/html/cron.php<br><br>
+
+    <span class="comment"># Every day at 6:30 PM</span><br>
+    30 18 * * * /home/user/evening_task.sh<br><br>
+
+    <span class="comment"># Every Monday at 3 AM</span><br>
+    0 3 * * 1 /home/user/weekly_report.sh<br><br>
+
+    <span class="comment"># Every weekday at 9 AM (Mon-Fri)</span><br>
+    0 9 * * 1-5 /home/user/work_task.sh<br><br>
+
+    <span class="comment"># On the 1st day of every month at midnight</span><br>
+    0 0 1 * * /home/user/monthly_backup.sh<br><br>
+
+    <span class="comment"># Every 2 hours</span><br>
+    0 */2 * * * /home/user/every2hours.sh<br><br>
+
+    <span class="comment"># Weekly system updates (Sunday 4 AM)</span><br>
     0 4 * * 0 sudo apt update && sudo apt upgrade -y<br><br>
 
+    <span class="comment"># Redirect output to log file</span><br>
+    0 2 * * * /home/user/script.sh >> /var/log/script.log 2>&1<br><br>
+
+  </div>
+
+  <h3>System-wide Cron</h3>
+  <p>
+    System-wide cron jobs are defined in:
+  </p>
+
+  <div class="code-box">
+    /etc/crontab<br>
+    /etc/cron.d/<br>
+    /etc/cron.daily/<br>
+    /etc/cron.weekly/<br>
+    /etc/cron.monthly/<br>
+  </div>
+
+  <p>
+    These are useful for administrative tasks affecting the entire server.
+  </p>
+
+  <h3>Best Practices</h3>
+  <ul>
+    <li>Always use full paths to commands (e.g., /usr/bin/php instead of php).</li>
+    <li>Redirect output to log files to debug errors.</li>
+    <li>Test scripts manually before scheduling them.</li>
+    <li>Avoid running heavy jobs during peak traffic hours.</li>
+    <li>Secure scripts with proper permissions.</li>
+  </ul>
+
+  <h3>Troubleshooting</h3>
+
+  <div class="code-box">
+    <span class="comment"># Check if cron service is running</span><br>
+    sudo systemctl status cron<br><br>
+
+    <span class="comment"># Check cron logs (Debian/Ubuntu)</span><br>
+    grep CRON /var/log/syslog<br>
   </div>
 
   <!-- END OF PART 2 -->
