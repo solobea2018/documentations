@@ -41,11 +41,13 @@
   <a href="#apache">Apache</a>
   <a href="#php">PHP</a>
   <a href="#certbot">Certbot SSL</a>
+  <a href="#ftp">FTP</a>
 
   <h2>Database</h2>
   <a href="#mysql">MySQL Installation</a>
   <a href="#mysql-users">MySQL Users & Grants</a>
   <a href="#mysql-backup">MySQL Backups</a>
+  <a href="#mysql-remote">MySQL Remote</a>
 
   <h2>Email Stack</h2>
   <a href="#postfix">Postfix</a>
@@ -803,7 +805,52 @@
 
   </div>
 
+  <h2 id="ftp" class="section-title">vsftpd FTP</h2>
+  <div class="code-box">
 
+    <span class="comment"># Install vsftpd FTP server</span><br>
+    sudo apt update<br>
+    sudo apt install vsftpd -y<br><br>
+
+    <span class="comment"># Verify vsftpd status</span><br>
+    sudo systemctl status vsftpd<br><br>
+
+    <span class="comment"># Backup default configuration</span><br>
+    sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.bak<br><br>
+
+    <span class="comment"># Edit vsftpd configuration for remote access</span><br>
+    sudo nano /etc/vsftpd.conf<br><br>
+
+    <span class="comment"># Key configuration options</span><br>
+    listen=YES &nbsp;&nbsp;<span class="comment"># Listen on IPv4</span><br>
+    anonymous_enable=NO &nbsp;&nbsp;<span class="comment"># Disable anonymous login</span><br>
+    local_enable=YES &nbsp;&nbsp;<span class="comment"># Enable local users</span><br>
+    write_enable=YES &nbsp;&nbsp;<span class="comment"># Allow uploads</span><br>
+    chroot_local_user=YES &nbsp;&nbsp;<span class="comment"># Restrict users to home directory</span><br>
+    pasv_min_port=10000<br>
+    pasv_max_port=10100<br><br>
+
+    <span class="comment"># Restart vsftpd to apply changes</span><br>
+    sudo systemctl restart vsftpd<br><br>
+
+    <span class="comment"># Configure firewall (UFW) for FTP</span><br>
+    sudo ufw allow 20/tcp<br>
+    sudo ufw allow 21/tcp<br>
+    sudo ufw allow 10000:10100/tcp &nbsp;&nbsp;<span class="comment"># Passive FTP ports</span><br>
+    sudo ufw reload<br><br>
+
+    <span class="comment"># Configure NAT/port forwarding (if behind router)</span><br>
+    <span class="comment"># Forward ports 21 and 10000-10100 to FTP server IP</span><br>
+    <span class="comment"># This is router-dependent; consult router interface</span><br><br>
+
+    <span class="comment"># Test FTP connection from remote machine</span><br>
+    ftp your-server-ip<br>
+    <span class="comment"># Login with local user credentials</span><br><br>
+
+    <span class="comment"># Enable vsftpd to start on boot</span><br>
+    sudo systemctl enable vsftpd<br>
+
+  </div>
 
   <!-- ====================================================== -->
   <!-- ============================ PHP ====================== -->
@@ -885,6 +932,39 @@
 
   </div>
 
+  <h2 id="mysql-remote" class="section-title">MySQL Remote Connection</h2>
+  <p>Configure MySQL to allow remote connections while maintaining security and proper firewall rules.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># Log in as root or admin user</span><br>
+    sudo mysql -u root -p<br><br>
+
+    <span class="comment"># Create database (if not already created)</span><br>
+    CREATE DATABASE exampledb;<br><br>
+
+    <span class="comment"># Create user and allow remote access</span><br>
+    CREATE USER 'exampleuser'@'%' IDENTIFIED BY 'StrongPass123!';<br><br>
+
+    <span class="comment"># Grant privileges for the user</span><br>
+    GRANT ALL PRIVILEGES ON exampledb.* TO 'exampleuser'@'%';<br>
+    FLUSH PRIVILEGES;<br><br>
+
+    <span class="comment"># Enable MySQL to listen on all network interfaces</span><br>
+    sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf<br>
+    <span class="comment"># Change bind-address from 127.0.0.1 to 0.0.0.0</span><br><br>
+
+    <span class="comment"># Restart MySQL service to apply changes</span><br>
+    sudo systemctl restart mysql<br><br>
+
+    <span class="comment"># Configure firewall (UFW) to allow MySQL port 3306</span><br>
+    sudo ufw allow 3306/tcp<br>
+    sudo ufw reload<br><br>
+
+    <span class="comment"># Test remote connection from another machine</span><br>
+    mysql -u exampleuser -p -h your-server-ip<br>
+
+  </div>
 
 
   <!-- ====================================================== -->
