@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Git Full Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>Git Basics</h2>
+    <a href="#install">Install Git</a>
+    <a href="#init">Init & Config</a>
+    <a href="#add-commit">Add & Commit</a>
+    <a href="#log">Log & History</a>
+
+    <h2>Branching</h2>
+    <a href="#branch">Create Branch</a>
+    <a href="#merge">Merge</a>
+    <a href="#rebase">Rebase</a>
+
+    <h2>Remote Repositories</h2>
+    <a href="#remote">Add Remote</a>
+    <a href="#push">Push & Pull</a>
+    <a href="#ssh">SSH Setup</a>
+
+    <h2>Advanced</h2>
+    <a href="#stash">Stash</a>
+    <a href="#reset">Reset & Revert</a>
+    <a href="#cherry">Cherry Pick</a>
+    <a href="#tag">Tags</a>
+
+    <h2>Troubleshooting</h2>
+    <a href="#auth">Stop Login Prompt</a>
+    <a href="#recover">Recover Deleted Work</a>
+</div>
+
+<div class="main">
+
+    <h1 style="color:#003399;">Git Full Documentation</h1>
+    <p>This guide covers Git from beginner to advanced level including private repositories, SSH authentication, merging strategies, and recovery techniques.</p>
+
+    <!-- INSTALL -->
+    <h2 id="install" class="section-title">Install Git</h2>
+    <div class="code-box">
+        <span class="comment"># Ubuntu/Debian</span><br>
+        sudo apt update<br>
+        sudo apt install git -y<br><br>
+
+        <span class="comment"># Check version</span><br>
+        git --version
+    </div>
+
+    <!-- INIT -->
+    <h2 id="init" class="section-title">Initialize & Configure</h2>
+    <div class="code-box">
+        <span class="comment"># Set global username</span><br>
+        git config --global user.name "Your Name"<br><br>
+
+        <span class="comment"># Set email</span><br>
+        git config --global user.email "you@example.com"<br><br>
+
+        <span class="comment"># View configuration</span><br>
+        git config --list<br><br>
+
+        <span class="comment"># Initialize repository</span><br>
+        git init
+    </div>
+
+    <!-- ADD COMMIT -->
+    <h2 id="add-commit" class="section-title">Add & Commit</h2>
+    <div class="code-box">
+        <span class="comment"># Check status</span><br>
+        git status<br><br>
+
+        <span class="comment"># Add specific file</span><br>
+        git add index.php<br><br>
+
+        <span class="comment"># Add all files</span><br>
+        git add .<br><br>
+
+        <span class="comment"># Commit changes</span><br>
+        git commit -m "Initial commit"<br><br>
+
+        <span class="comment"># Amend last commit</span><br>
+        git commit --amend
+    </div>
+
+    <!-- LOG -->
+    <h2 id="log" class="section-title">Log & History</h2>
+    <div class="code-box">
+        <span class="comment"># Show commit history</span><br>
+        git log<br><br>
+
+        <span class="comment"># Compact log</span><br>
+        git log --oneline<br><br>
+
+        <span class="comment"># Graph view</span><br>
+        git log --graph --oneline --all
+    </div>
+
+    <!-- BRANCH -->
+    <h2 id="branch" class="section-title">Branching</h2>
+    <div class="code-box">
+        <span class="comment"># List branches</span><br>
+        git branch<br><br>
+
+        <span class="comment"># Create new branch</span><br>
+        git branch feature-login<br><br>
+
+        <span class="comment"># Switch branch</span><br>
+        git checkout feature-login<br><br>
+
+        <span class="comment"># Create and switch</span><br>
+        git checkout -b feature-payment
+    </div>
+
+    <!-- MERGE -->
+    <h2 id="merge" class="section-title">Merge</h2>
+    <div class="code-box">
+        <span class="comment"># Merge feature into main</span><br>
+        git checkout main<br>
+        git merge feature-login<br><br>
+
+        <span class="comment"># Abort merge if conflict</span><br>
+        git merge --abort
+    </div>
+
+    <!-- REBASE -->
+    <h2 id="rebase" class="section-title">Rebase</h2>
+    <div class="code-box">
+        <span class="comment"># Rebase feature onto main</span><br>
+        git checkout feature-login<br>
+        git rebase main<br><br>
+
+        <span class="comment"># Continue after conflict</span><br>
+        git rebase --continue
+    </div>
+
+    <!-- REMOTE -->
+    <h2 id="remote" class="section-title">Add Remote Repository</h2>
+    <div class="code-box">
+        <span class="comment"># Add remote</span><br>
+        git remote add origin https://github.com/user/repo.git<br><br>
+
+        <span class="comment"># View remotes</span><br>
+        git remote -v
+    </div>
+
+    <!-- PUSH -->
+    <h2 id="push" class="section-title">Push & Pull</h2>
+    <div class="code-box">
+        <span class="comment"># Push to remote</span><br>
+        git push origin main<br><br>
+
+        <span class="comment"># Pull updates</span><br>
+        git pull origin main<br><br>
+
+        <span class="comment"># Clone repository</span><br>
+        git clone https://github.com/user/repo.git
+    </div>
+
+    <!-- SSH -->
+    <h2 id="ssh" class="section-title">SSH Setup for Private Repositories</h2>
+    <div class="code-box">
+        <span class="comment"># Generate SSH key</span><br>
+        ssh-keygen -t ed25519 -C "you@example.com"<br><br>
+
+        <span class="comment"># Add SSH remote</span><br>
+        git remote set-url origin git@github.com:user/repo.git<br><br>
+
+        <span class="comment"># Test connection</span><br>
+        ssh -T git@github.com
+    </div>
+
+    <!-- STASH -->
+    <h2 id="stash" class="section-title">Git Stash</h2>
+    <div class="code-box">
+        <span class="comment"># Save changes temporarily</span><br>
+        git stash<br><br>
+
+        <span class="comment"># List stashes</span><br>
+        git stash list<br><br>
+
+        <span class="comment"># Apply stash</span><br>
+        git stash apply<br><br>
+
+        <span class="comment"># Drop stash</span><br>
+        git stash drop
+    </div>
+
+    <!-- RESET -->
+    <h2 id="reset" class="section-title">Reset & Revert</h2>
+    <div class="code-box">
+        <span class="comment"># Soft reset (keep changes)</span><br>
+        git reset --soft HEAD~1<br><br>
+
+        <span class="comment"># Hard reset (delete changes)</span><br>
+        git reset --hard HEAD~1<br><br>
+
+        <span class="comment"># Revert commit safely</span><br>
+        git revert HEAD
+    </div>
+
+    <!-- CHERRY PICK -->
+    <h2 id="cherry" class="section-title">Cherry Pick</h2>
+    <div class="code-box">
+        <span class="comment"># Apply specific commit</span><br>
+        git cherry-pick COMMIT_ID
+    </div>
+
+    <!-- TAG -->
+    <h2 id="tag" class="section-title">Tags</h2>
+    <div class="code-box">
+        <span class="comment"># Create tag</span><br>
+        git tag v1.0<br><br>
+
+        <span class="comment"># Push tag</span><br>
+        git push origin v1.0
+    </div>
+
+    <!-- STOP LOGIN -->
+    <h2 id="auth" class="section-title">Stop Git From Asking Login</h2>
+    <div class="code-box">
+        <span class="comment"># Use credential manager (HTTPS)</span><br>
+        git config --global credential.helper manager<br><br>
+
+        <span class="comment"># OR use SSH instead (recommended)</span><br>
+        git remote set-url origin git@github.com:user/repo.git
+    </div>
+
+    <!-- RECOVERY -->
+    <h2 id="recover" class="section-title">Recover Deleted Work</h2>
+    <div class="code-box">
+        <span class="comment"># View reference log</span><br>
+        git reflog<br><br>
+
+        <span class="comment"># Recover commit</span><br>
+        git checkout COMMIT_ID
+    </div>
+
+</div>
+</body>
+</html>
