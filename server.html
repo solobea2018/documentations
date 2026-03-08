@@ -291,11 +291,26 @@
     sudo mkfs.ext4 /dev/sdb1
     sudo mkfs.xfs /dev/sdb1<br><br>
 
-    <span class="comment"># Mount a filesystem</span><br>
+    <span class="comment"># Create mount directory</span><br>
+    sudo mkdir -p /mnt/data<br><br>
+
+    <span class="comment"># Mount a filesystem manually</span><br>
     sudo mount /dev/sdb1 /mnt/data<br><br>
 
     <span class="comment"># List mounted filesystems</span><br>
     mount | grep /mnt<br><br>
+
+    <span class="comment"># Get disk UUID (recommended for persistent mounts)</span><br>
+    sudo blkid /dev/sdb1<br><br>
+
+    <span class="comment"># Edit fstab to mount disk automatically at boot</span><br>
+    sudo nano /etc/fstab<br><br>
+
+    <span class="comment"># Add this line inside /etc/fstab</span><br>
+    UUID=your-uuid-here /mnt/data ext4 defaults,nofail 0 2<br><br>
+
+    <span class="comment"># Test fstab configuration without rebooting</span><br>
+    sudo mount -a<br><br>
 
     <span class="comment"># Unmount a disk</span><br>
     sudo umount /mnt/data<br><br>
