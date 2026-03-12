@@ -11,6 +11,19 @@
 
 <!-- SIDEBAR NAVIGATION -->
 <div class="sidebar">
+  <h2>File System</h2>
+  <a href="#filesystem-overview">File System Overview</a>
+  <a href="#mounting">Mounting & Unmounting</a>
+  <a href="#partitions">Partitions & Formatting</a>
+  <a href="#inodes">Inodes & File Attributes</a>
+  <a href="#disk-usage">Disk Usage & Quotas</a>
+  <a href="#permissions">File & Directory Permissions</a>
+  <a href="#links">Symbolic & Hard Links</a>
+  <a href="#fstab">fstab Configuration</a>
+  <a href="#journal">Journaling & File System Types</a>
+  <a href="#troubleshooting">File System Troubleshooting</a>
+
+
   <h2>System Administration</h2>
   <a href="#sys-overview">System Overview</a>
   <a href="#users">Users & Groups</a>
@@ -71,7 +84,80 @@
   <p>Code examples are formatted in VS Code dark theme.
     Every command includes comments, explanations, and real-world usage scenarios.</p>
 
+  <h2 id="filesystem-overview" class="section-title">File System Overview</h2>
 
+  <p>This section explains how Linux organizes and manages data on disks, including partitions, filesystems, and related tools for monitoring and maintenance.</p>
+
+  <div class="code-box">
+
+    <span class="comment"># List all disks and partitions</span><br>
+    lsblk -f
+    <span class="comment"># Shows all block devices, partitions, filesystem types, and mount points.</span><br><br>
+
+    <span class="comment"># View partition tables</span><br>
+    sudo fdisk -l
+    <span class="comment"># Lists partitions, sizes, and types on all disks.</span><br><br>
+
+    <span class="comment"># Check mounted filesystems</span><br>
+    mount | column -t
+    <span class="comment"># Shows all currently mounted filesystems and mount options.</span><br><br>
+
+    <span class="comment"># Check disk usage</span><br>
+    df -h
+    <span class="comment"># Reports free/used space in human-readable format.</span><br><br>
+
+    <span class="comment"># Check inode usage</span><br>
+    df -i
+    <span class="comment"># Useful when lots of small files cause "No space left on device" despite free disk space.</span><br><br>
+
+    <span class="comment"># Show detailed disk usage</span><br>
+    du -sh /var/log/*
+    <span class="comment"># Displays the size of directories or files. Helps locate large files consuming space.</span><br><br>
+
+    <span class="comment"># File permissions and ownership</span><br>
+    ls -l /var/www/html
+    <span class="comment"># Lists permissions, owners, and groups of files in a directory.</span><br><br>
+
+    <span class="comment"># Change ownership</span><br>
+    sudo chown user:group filename
+    <span class="comment"># Changes owner and group of a file/directory.</span><br><br>
+
+    <span class="comment"># Change permissions</span><br>
+    sudo chmod 755 filename
+    <span class="comment"># Sets read/write/execute permissions. Common: 755 for directories, 644 for files.</span><br><br>
+
+    <span class="comment"># Create symbolic and hard links</span><br>
+    ln -s /path/to/original /path/to/link
+    ln /path/to/original /path/to/hardlink
+    <span class="comment"># Symbolic links point to files/directories; hard links duplicate references.</span><br><br>
+
+    <span class="comment"># Configure fstab for auto-mounting</span><br>
+    sudo nano /etc/fstab
+    <span class="comment"># Add entries for devices to mount at boot. Example: UUID=xxxx /mnt/data ext4 defaults 0 2</span><br><br>
+
+    <span class="comment"># Mount and unmount manually</span><br>
+    sudo mount /dev/sdb1 /mnt/data
+    sudo umount /mnt/data
+    <span class="comment"># Mount or unmount partitions temporarily.</span><br><br>
+
+    <span class="comment"># File system check (for ext4)</span><br>
+    sudo fsck -f /dev/sdb1
+    <span class="comment"># Checks and repairs filesystem inconsistencies. Run only on unmounted partitions.</span><br><br>
+
+    <span class="comment"># Identify filesystem type</span><br>
+    sudo blkid /dev/sdb1
+    <span class="comment"># Shows the filesystem type and UUID of a disk/partition.</span><br><br>
+
+    <span class="comment"># Disk quotas (if enabled)</span><br>
+    sudo repquota -a
+    <span class="comment"># Shows user disk usage and limits when quotas are active.</span><br><br>
+
+    <span class="comment"># Troubleshooting tips</span><br>
+    dmesg | grep -i ext4
+    sudo journalctl -xe | grep mount
+    <span class="comment"># Check kernel and system logs for filesystem or mount errors.</span><br><br>
+
+  </div>
 
   <!-- ====================== -->
   <!-- SYSTEM OVERVIEW START -->
@@ -137,7 +223,17 @@
 
     <span class="comment"># Create a system user (no shell, no home)</span><br>
     sudo useradd -r -s /usr/sbin/nologin mysqluser
+    <br>
+    usermod -s /sbin/nologin testuser
     <span class="comment"># Used for system services like MySQL, Postfix, web apps.</span><br><br>
+
+    <span class="comment">Change usr dir</span><br/><br>
+    sudo usermod -d /var/www/html ftp-user<br>
+    sudo usermod -aG www-data ftp-user<br>
+    sudo chown -R www-data:www-data /var/www/html<br>
+    sudo chmod -R 775 /var/www/html<br>
+    <span class="comment">View user dir</span><br>
+    getent passwd ftp-user<br>
 
     <span class="comment"># Change user shell</span><br>
     sudo chsh -s /bin/bash johndoe<br><br>
@@ -927,7 +1023,7 @@
     anonymous_enable=NO &nbsp;&nbsp;<span class="comment"># Disable anonymous login</span><br>
     local_enable=YES &nbsp;&nbsp;<span class="comment"># Enable local users</span><br>
     write_enable=YES &nbsp;&nbsp;<span class="comment"># Allow uploads</span><br>
-    chroot_local_user=YES &nbsp;&nbsp;<span class="comment"># Restrict users to home directory</span><br>
+    chroot_local_user=YES &nbsp;&nbsp;<span class="comment"># Restrict users to home directory. If you do not wish FTP users to be able to access any files outside of their own home directory, set up chroot jail.</span><br>
     pasv_min_port=10000<br>
     pasv_max_port=10100<br><br>
 
@@ -950,6 +1046,15 @@
 
     <span class="comment"># Enable vsftpd to start on boot</span><br>
     sudo systemctl enable vsftpd<br>
+
+    <span class="comment"># Print the actual error on vsftp</span><br>
+    sudo /usr/sbin/vsftpd /etc/vsftpd.conf<br>
+
+    <span class="comment"># 500 OOPS: vsftpd: refusing to run with writable root inside chroot()
+Connection closed by remote host.</span><br>
+    $ nano /etc/vsftpd/vsftpd.conf
+    ...
+    allow_writeable_chroot=YES<br>
 
   </div>
 

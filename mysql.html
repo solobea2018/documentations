@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MySQL Commands Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>MySQL Documentation</h2>
+    <a href="#intro">Introduction</a>
+    <a href="#connect">Connect to MySQL</a>
+    <a href="#database">Database Operations</a>
+    <a href="#table">Table Operations</a>
+    <a href="#insert">Insert & Update Data</a>
+    <a href="#select">Selecting Data</a>
+    <a href="#join">Join Queries</a>
+    <a href="#selfjoin">Self Join</a>
+    <a href="#functions">Functions</a>
+    <a href="#views">Views</a>
+    <a href="#copy">Copying Tables</a>
+    <a href="#rename">Renaming Tables</a>
+    <a href="#fulltext">Full Text Search</a>
+    <a href="#backup">Backup & Restore</a>
+</div>
+
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+    <h1 style="color:#003399;">MySQL Commands Documentation</h1>
+    <p>This guide provides commonly used MySQL commands used daily by database administrators and system administrators.
+        Commands range from simple queries to advanced operations such as joins, views, and full-text searches.</p>
+
+
+    <!-- INTRO -->
+    <h2 id="intro" class="section-title">Introduction</h2>
+
+    <p>MySQL is an open-source relational database management system used for storing and managing structured data.</p>
+
+
+
+    <!-- CONNECT -->
+    <h2 id="connect" class="section-title">Connect to MySQL</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Login to MySQL server</span><br>
+        <span class="cmd">mysql -u root -p</span><br><br>
+
+        <span class="comment"># Login to remote MySQL server</span><br>
+        <span class="cmd">mysql -u username -p -h 192.168.1.10</span><br><br>
+
+        <span class="comment"># Show MySQL version</span><br>
+        <span class="cmd">SELECT VERSION();</span>
+
+    </div>
+
+
+
+    <!-- DATABASE -->
+    <h2 id="database" class="section-title">Database Operations</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Show all databases</span><br>
+        <span class="cmd">SHOW DATABASES;</span><br><br>
+
+        <span class="comment"># Create new database</span><br>
+        <span class="cmd">CREATE DATABASE school;</span><br><br>
+
+        <span class="comment"># Select database</span><br>
+        <span class="cmd">USE school;</span><br><br>
+
+        <span class="comment"># Delete database</span><br>
+        <span class="cmd">DROP DATABASE school;</span>
+
+    </div>
+
+
+
+    <!-- TABLE -->
+    <h2 id="table" class="section-title">Table Operations</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Show tables in database</span><br>
+        <span class="cmd">SHOW TABLES;</span><br><br>
+
+        <span class="comment"># Show table structure</span><br>
+        <span class="cmd">DESCRIBE users;</span><br><br>
+
+        <span class="comment"># Create table</span><br>
+        <span class="cmd">
+CREATE TABLE users ( <br>
+id INT AUTO_INCREMENT PRIMARY KEY,<br>
+name VARCHAR(100),<br>
+email VARCHAR(150),<br>
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP<br>
+);
+</span><br><br>
+
+        <span class="comment"># Delete table</span><br>
+        <span class="cmd">DROP TABLE users;</span>
+
+    </div>
+
+
+
+    <!-- INSERT -->
+    <h2 id="insert" class="section-title">Insert & Update Data</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Insert record</span><br>
+        <span class="cmd">
+INSERT INTO users(name,email)<br>
+VALUES('John Doe','john@email.com');
+</span><br><br>
+
+        <span class="comment"># Insert multiple rows</span><br>
+        <span class="cmd">
+INSERT INTO users(name,email)<br>
+VALUES<br>
+('Alice','alice@mail.com'),<br>
+('Bob','bob@mail.com');
+</span><br><br>
+
+        <span class="comment"># Update data</span><br>
+        <span class="cmd">
+UPDATE users SET email='new@mail.com'<br>
+WHERE id=1;
+</span><br><br>
+
+        <span class="comment"># Delete row</span><br>
+        <span class="cmd">
+DELETE FROM users WHERE id=5;
+</span>
+
+    </div>
+
+
+
+    <!-- SELECT -->
+    <h2 id="select" class="section-title">Selecting Data</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Select all records</span><br>
+        <span class="cmd">SELECT * FROM users;</span><br><br>
+
+        <span class="comment"># Select specific columns</span><br>
+        <span class="cmd">SELECT name,email FROM users;</span><br><br>
+
+        <span class="comment"># Filter results</span><br>
+        <span class="cmd">SELECT * FROM users WHERE id=1;</span><br><br>
+
+        <span class="comment"># Order results</span><br>
+        <span class="cmd">SELECT * FROM users ORDER BY id DESC;</span><br><br>
+
+        <span class="comment"># Limit number of results</span><br>
+        <span class="cmd">SELECT * FROM users LIMIT 10;</span>
+
+    </div>
+
+
+
+    <!-- JOIN -->
+    <h2 id="join" class="section-title">Join Queries</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># INNER JOIN example</span><br>
+        <span class="cmd">
+SELECT users.name,orders.total<br>
+FROM users<br>
+INNER JOIN orders<br>
+ON users.id = orders.user_id;
+</span><br><br>
+
+        <span class="comment"># LEFT JOIN (show all users even if no orders)</span><br>
+        <span class="cmd">
+SELECT users.name,orders.total<br>
+FROM users<br>
+LEFT JOIN orders<br>
+ON users.id = orders.user_id;
+</span>
+
+    </div>
+
+
+
+    <!-- SELF JOIN -->
+    <h2 id="selfjoin" class="section-title">Self Join (Table to Itself)</h2>
+
+    <p>Used when records in the same table relate to each other, such as employees and managers.</p>
+
+    <div class="code-box">
+
+<span class="cmd">
+SELECT e.name AS employee,<br>
+m.name AS manager<br>
+FROM employees e<br>
+LEFT JOIN employees m<br>
+ON e.manager_id = m.id;
+</span>
+
+    </div>
+
+
+
+    <!-- FUNCTIONS -->
+    <h2 id="functions" class="section-title">Common MySQL Functions</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Count rows</span><br>
+        <span class="cmd">SELECT COUNT(*) FROM users;</span><br><br>
+
+        <span class="comment"># Sum column values</span><br>
+        <span class="cmd">SELECT SUM(amount) FROM payments;</span><br><br>
+
+        <span class="comment"># Average value</span><br>
+        <span class="cmd">SELECT AVG(score) FROM exams;</span><br><br>
+
+        <span class="comment"># Get current date</span><br>
+        <span class="cmd">SELECT NOW();</span><br><br>
+
+        <span class="comment"># String search</span><br>
+        <span class="cmd">SELECT * FROM users WHERE name LIKE '%john%';</span>
+
+    </div>
+
+
+
+    <!-- VIEWS -->
+    <h2 id="views" class="section-title">Views</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Create view</span><br>
+        <span class="cmd">
+CREATE VIEW user_orders AS<br>
+SELECT users.name,orders.total<br>
+FROM users<br>
+JOIN orders ON users.id = orders.user_id;
+</span><br><br>
+
+        <span class="comment"># Query view</span><br>
+        <span class="cmd">SELECT * FROM user_orders;</span><br><br>
+
+        <span class="comment"># Delete view</span><br>
+        <span class="cmd">DROP VIEW user_orders;</span>
+
+    </div>
+
+
+
+    <!-- COPY -->
+    <h2 id="copy" class="section-title">Copying Tables</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Copy table structure</span><br>
+        <span class="cmd">CREATE TABLE users_backup LIKE users;</span><br><br>
+
+        <span class="comment"># Copy table with data</span><br>
+        <span class="cmd">CREATE TABLE users_backup AS SELECT * FROM users;</span>
+
+    </div>
+
+
+
+    <!-- RENAME -->
+    <h2 id="rename" class="section-title">Renaming Tables</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Rename table</span><br>
+        <span class="cmd">RENAME TABLE users TO customers;</span>
+
+    </div>
+
+
+
+    <!-- FULLTEXT -->
+    <h2 id="fulltext" class="section-title">Full Text Search</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Add full text index</span><br>
+        <span class="cmd">ALTER TABLE articles ADD FULLTEXT(title,content);</span><br><br>
+
+        <span class="comment"># Search text</span><br>
+        <span class="cmd">
+SELECT * FROM articles<br>
+WHERE MATCH(title,content)<br>
+AGAINST('mysql tutorial');
+</span>
+
+    </div>
+
+
+
+    <!-- BACKUP -->
+    <h2 id="backup" class="section-title">Backup & Restore</h2>
+
+    <div class="code-box">
+
+        <span class="comment"># Backup database</span><br>
+        <span class="cmd">mysqldump -u root -p dbname > backup.sql</span><br><br>
+
+        <span class="comment"># Restore database</span><br>
+        <span class="cmd">mysql -u root -p dbname < backup.sql</span>
+
+    </div>
+
+
+
+</div>
+
+</body>
+</html>
