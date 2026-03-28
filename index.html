@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation Center</title>
+  <link rel="stylesheet" href="home.css">
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="logo">Documentation</div>
+
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+</header>
+
+
+<div class="container">
+
+  <nav class="sidebar" id="sidebar">
+
+    <h3>Guides</h3>
+
+    <a href="adb.html">ADB Guide</a>
+    <a href="adb_commands.txt">ADB Commands</a>
+
+    <a href="aws.html">AWS Setup</a>
+
+    <a href="captive_portal.html">Captive Portal</a>
+
+    <a href="git.html">Git Guide</a>
+
+    <a href="mysql.html">MySQL Guide</a>
+
+    <a href="server.html">Server Setup</a>
+
+    <a href="windows_ssh.html">Windows SSH</a>
+
+    <a href="windows_ssh_commands.txt">Windows SSH Commands</a>
+
+    <h3>Scripts</h3>
+
+    <a href="first.sh">First Script</a>
+
+    <h3>Other</h3>
+
+    <a href="index.php">PHP Index</a>
+
+  </nav>
+
+
+
+  <main class="content">
+
+    <h1>Documentation Center</h1>
+
+    <p>
+      Welcome to the system documentation dashboard.
+      Select a guide from the menu to open documentation files.
+    </p>
+
+    <div class="cards">
+
+      <a href="adb.html" class="card">
+        <h3>ADB</h3>
+        <p>Android Debug Bridge documentation</p>
+      </a>
+
+      <a href="aws.html" class="card">
+        <h3>AWS</h3>
+        <p>Amazon Web Services configuration</p>
+      </a>
+
+      <a href="mysql.html" class="card">
+        <h3>MySQL</h3>
+        <p>Database configuration and usage</p>
+      </a>
+
+      <a href="server.html" class="card">
+        <h3>Server</h3>
+        <p>Server setup documentation</p>
+      </a>
+
+    </div>
+
+  </main>
+
+</div>
+
+
+<script>
+
+  function toggleMenu(){
+    document.getElementById("sidebar").classList.toggle("show");
+  }
+
+</script>
+
+</body>
+</html>
