@@ -5,9 +5,6 @@
   <title>ADB Commands Documentation</title>
   <link rel="stylesheet" href="styles.css">
 </head>
-
-
-
 <body>
 
 <!-- SIDEBAR -->
@@ -24,28 +21,16 @@
   <a href="#logs">Log & Debugging</a>
   <a href="#notes">Important Notes</a>
 </div>
-
-
-
-
 <!-- MAIN CONTENT -->
 <div class="main">
 
   <h1 style="color:#003399;">ADB Commands Documentation</h1>
   <p>This documentation provides a complete guide to commonly used ADB commands for Android debugging, package management, bloat removal, log retrieval, file transfers, reboots, and shell operations.</p>
   <p>All commands use a VS Code–styled terminal theme for clarity.</p>
-
-
-
-
   <!-- INTRO -->
   <h2 id="intro" class="section-title">Introduction</h2>
   <p>ADB (Android Debug Bridge) is a command-line tool used to communicate with Android devices for debugging, app removal, file transfers, shell access, and system modifications.</p>
   <p>ADB must be enabled under Developer Options → USB Debugging on your Android device.</p>
-
-
-
-
   <!-- SETUP -->
   <h2 id="setup" class="section-title">Setup and Connect Device</h2>
 
@@ -61,10 +46,6 @@
     <span class="cmd">adb tcpip 5555</span><br>
     <span class="cmd">adb connect 192.168.x.x:5555</span>
   </div>
-
-
-
-
   <!-- SHELL -->
   <h2 id="shell" class="section-title">ADB Shell Basics</h2>
 
@@ -85,10 +66,6 @@
     <span class="comment"># Check running services</span><br>
     <span class="cmd">service list</span>
   </div>
-
-
-
-
   <!-- PACKAGES -->
   <h2 id="packages" class="section-title">Package Management Commands</h2>
 
@@ -105,10 +82,6 @@
     <span class="comment"># Re-enable disabled app</span><br>
     <span class="cmd">pm enable package.name</span><br><br>
   </div>
-
-
-
-
   <!-- SAFE BLOATWARE REMOVAL -->
   <h2 id="bloatware" class="section-title">Safe Bloatware Removal (TECNO / Infinix / itel)</h2>
 
@@ -145,10 +118,6 @@
     pm uninstall --user 0 com.gallery20<br><br>
 
   </div>
-
-
-
-
   <!-- DISABLE -->
   <h2 id="disable" class="section-title">Disable Apps (Alternative to Uninstall)</h2>
 
@@ -161,10 +130,6 @@
     <span class="comment"># Example:</span><br>
     <span class="cmd">pm disable-user --user 0 com.transsion.applock</span>
   </div>
-
-
-
-
   <!-- FILE OPERATIONS -->
   <h2 id="file" class="section-title">File Transfer Operations</h2>
 
@@ -180,10 +145,6 @@
     <span class="cmd">adb shell ls /sdcard/</span><br><br>
 
   </div>
-
-
-
-
   <!-- REBOOT -->
   <h2 id="reboot" class="section-title">Reboot & Recovery Commands</h2>
 
@@ -199,10 +160,6 @@
     <span class="cmd">adb reboot recovery</span><br><br>
 
   </div>
-
-
-
-
   <!-- LOGS -->
   <h2 id="logs" class="section-title">Log & Debugging Commands</h2>
 
@@ -218,10 +175,6 @@
     <span class="cmd">adb shell dumpsys</span><br><br>
 
   </div>
-
-
-
-
   <!-- NOTES -->
   <h2 id="notes" class="section-title">Important Notes</h2>
 

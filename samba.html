@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Samba Full Documentation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Installation</h2>
+  <a href="#install">Install Samba</a>
+  <a href="#check">Check Version</a>
+
+  <h2>Basic Configuration</h2>
+  <a href="#create-dir">Create Share Directory</a>
+  <a href="#edit-conf">Edit smb.conf</a>
+  <a href="#restart">Restart & Enable Service</a>
+
+  <h2>Users & Permissions</h2>
+  <a href="#samba-user">Add Samba User</a>
+  <a href="#permissions">Folder Permissions</a>
+
+  <h2>Firewall & Access</h2>
+  <a href="#ufw">Allow Samba in UFW</a>
+  <a href="#ports">Ports & Network Access</a>
+
+  <h2>Windows Integration</h2>
+  <a href="#access-windows">Access from Windows</a>
+  <a href="#network-discovery">Network Discovery (wsdd)</a>
+
+  <h2>Advanced</h2>
+  <a href="#vpn-access">Remote Access via VPN</a>
+  <a href="#security-tips">Security Tips</a>
+
+  <h2>Troubleshooting</h2>
+  <a href="#test">Test Share</a>
+  <a href="#logs">Check Logs</a>
+</div>
+
+<div class="main">
+
+  <h1 style="color:#003399;">Samba Full Documentation</h1>
+  <p>This guide covers Samba installation and configuration for Linux, including creating shares, users, Windows integration, security, and remote access.</p>
+
+  <!-- INSTALL -->
+  <h2 id="install" class="section-title">Install Samba</h2>
+  <div class="code-box">
+    <span class="comment"># Update packages</span><br>
+    sudo apt update<br><br>
+
+    <span class="comment"># Install Samba</span><br>
+    sudo apt install samba -y
+  </div>
+
+  <!-- CHECK VERSION -->
+  <h2 id="check" class="section-title">Check Samba Version</h2>
+  <div class="code-box">
+    smbd --version
+  </div>
+
+  <!-- CREATE DIRECTORY -->
+  <h2 id="create-dir" class="section-title">Create Share Directory</h2>
+  <div class="code-box">
+    sudo mkdir -p /srv/samba/share<br>
+    sudo chmod 777 /srv/samba/share
+  </div>
+
+  <!-- EDIT CONF -->
+  <h2 id="edit-conf" class="section-title">Edit Samba Configuration</h2>
+  <div class="code-box">
+    sudo nano /etc/samba/smb.conf<br><br>
+
+    <span class="comment"># Add at the end of the file:</span><br>
+    [Shared]<br>
+    path = /srv/samba/share<br>
+    browseable = yes<br>
+    writable = yes<br>
+    guest ok = yes<br>
+    read only = no
+  </div>
+
+  <!-- RESTART -->
+  <h2 id="restart" class="section-title">Restart & Enable Samba Service</h2>
+  <div class="code-box">
+    sudo systemctl restart smbd<br>
+    sudo systemctl enable smbd
+  </div>
+
+  <!-- SAMBA USER -->
+  <h2 id="samba-user" class="section-title">Add Samba User (Optional)</h2>
+  <div class="code-box">
+    <span class="comment"># Add Linux user</span><br>
+    sudo adduser myuser<br><br>
+
+    <span class="comment"># Add Samba password</span><br>
+    sudo smbpasswd -a myuser<br><br>
+
+    <span class="comment"># Restrict share to this user</span><br>
+    # In smb.conf, modify:<br>
+    guest ok = no<br>
+    valid users = myuser
+  </div>
+
+  <!-- PERMISSIONS -->
+  <h2 id="permissions" class="section-title">Folder Permissions</h2>
+  <div class="code-box">
+    sudo chown -R myuser:myuser /srv/samba/share<br>
+    sudo chmod -R 770 /srv/samba/share
+  </div>
+
+  <!-- UFW -->
+  <h2 id="ufw" class="section-title">Allow Samba Through UFW</h2>
+  <div class="code-box">
+    sudo ufw allow samba<br>
+    sudo ufw reload
+  </div>
+
+  <!-- PORTS -->
+  <h2 id="ports" class="section-title">Samba Ports & Network Access</h2>
+  <div class="code-box">
+    <span class="comment"># TCP ports for Samba</span><br>
+    137, 138, 139, 445<br><br>
+
+    <span class="comment"># Allow only local subnet</span><br>
+    sudo ufw allow from 192.168.1.0/24 to any port 445
+  </div>
+
+  <!-- ACCESS WINDOWS -->
+  <h2 id="access-windows" class="section-title">Access Samba Share from Windows</h2>
+  <div class="code-box">
+    <span class="comment"># Using IP address</span><br>
+    \\192.168.1.20<br><br>
+
+    <span class="comment"># Using hostname</span><br>
+    \\fileserver\Shared
+  </div>
+
+  <!-- NETWORK DISCOVERY -->
+  <h2 id="network-discovery" class="section-title">Windows Network Discovery (wsdd)</h2>
+  <div class="code-box">
+    sudo apt install wsdd<br>
+    sudo systemctl enable wsdd<br>
+    sudo systemctl start wsdd
+  </div>
+
+  <!-- VPN ACCESS -->
+  <h2 id="vpn-access" class="section-title">Remote Access via VPN</h2>
+  <div class="code-box">
+    <span class="comment"># Recommended for public IPs</span><br>
+    # Set up WireGuard/OpenVPN on server or pfSense<br>
+    # Connect Windows client to VPN<br>
+    # Access Samba share as if on LAN: \\10.x.x.x\Shared
+  </div>
+
+  <!-- SECURITY TIPS -->
+  <h2 id="security-tips" class="section-title">Security Tips</h2>
+  <div class="code-box">
+    <span class="comment"># Never expose Samba directly to public internet</span><br>
+    # Use VPN or SSH tunnel<br><br>
+
+    <span class="comment"># Limit access by subnet</span><br>
+    sudo ufw allow from 192.168.1.0/24 to any port 445<br><br>
+
+    <span class="comment"># Use strong passwords for Samba users</span><br>
+    sudo smbpasswd -a myuser
+  </div>
+
+  <!-- TEST -->
+  <h2 id="test" class="section-title">Test Samba Share</h2>
+  <div class="code-box">
+    smbclient -L localhost<br>
+    smbclient //localhost/Shared -U myuser
+  </div>
+
+  <!-- LOGS -->
+  <h2 id="logs" class="section-title">Check Samba Logs</h2>
+  <div class="code-box">
+    sudo tail -f /var/log/samba/log.smbd<br>
+    sudo tail -f /var/log/samba/log.nmbd
+  </div>
+
+</div>
+</body>
+</html>

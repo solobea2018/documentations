@@ -831,6 +831,96 @@
     cat /var/lib/dhcp/dhclient.leases<br><br>
 
   </div>
+  <div class="code-box">
+
+    <span class="comment"># Install OpenSSH server</span><br>
+    sudo apt update<br>
+    sudo apt install openssh-server -y<br><br>
+
+    <span class="comment"># Verify SSH service status</span><br>
+    sudo systemctl status ssh<br><br>
+
+    <span class="comment"># Enable SSH to start automatically on boot</span><br>
+    sudo systemctl enable ssh<br><br>
+
+    <span class="comment"># Start SSH service if not running</span><br>
+    sudo systemctl start ssh<br><br>
+
+
+    <span class="comment"># Check SSH port listening</span><br>
+    sudo ss -tulpn | grep ssh<br>
+    <span class="comment"># Default port is 22</span><br><br>
+
+
+    <span class="comment"># Allow SSH through firewall (UFW)</span><br>
+    sudo ufw allow ssh<br>
+    <span class="comment"># or</span><br>
+    sudo ufw allow 22/tcp<br><br>
+
+
+    <span class="comment"># Test SSH connection from another machine</span><br>
+    ssh username@server-ip<br><br>
+
+
+    <span class="comment"># Edit SSH server configuration</span><br>
+    sudo nano /etc/ssh/sshd_config<br><br>
+
+
+    <span class="comment"># Important SSH security configurations</span><br>
+
+    Port 22 &nbsp;&nbsp;<span class="comment"># Change port to something else for security (example 2222)</span><br>
+    PermitRootLogin no &nbsp;&nbsp;<span class="comment"># Disable root login</span><br>
+    PasswordAuthentication yes &nbsp;&nbsp;<span class="comment"># Allow password login (or set to no for key-only login)</span><br>
+    PubkeyAuthentication yes &nbsp;&nbsp;<span class="comment"># Enable SSH key authentication</span><br>
+    MaxAuthTries 3 &nbsp;&nbsp;<span class="comment"># Limit login attempts</span><br>
+    LoginGraceTime 30 &nbsp;&nbsp;<span class="comment"># Time allowed for login</span><br>
+    X11Forwarding no &nbsp;&nbsp;<span class="comment"># Disable X11 forwarding if not needed</span><br><br>
+
+
+    <span class="comment"># Save configuration and restart SSH</span><br>
+    sudo systemctl restart ssh<br><br>
+
+
+    <span class="comment"># Verify SSH configuration syntax</span><br>
+    sudo sshd -t<br><br>
+
+
+    <span class="comment"># Generate SSH key on client machine</span><br>
+    ssh-keygen -t rsa -b 4096<br><br>
+
+
+    <span class="comment"># Copy SSH key to server</span><br>
+    ssh-copy-id username@server-ip<br><br>
+
+
+    <span class="comment"># Test login using SSH key</span><br>
+    ssh username@server-ip<br><br>
+
+
+    <span class="comment"># Disable password authentication after key setup (recommended)</span><br>
+    sudo nano /etc/ssh/sshd_config<br>
+    PasswordAuthentication no<br><br>
+
+    <span class="comment"># Restart SSH to apply changes</span><br>
+    sudo systemctl restart ssh<br><br>
+
+
+    <span class="comment"># Check SSH logs if login fails</span><br>
+    sudo journalctl -u ssh<br>
+    <span class="comment"># or</span><br>
+    sudo tail -f /var/log/auth.log<br><br>
+
+
+    <span class="comment"># Allow SSH only from specific IP (optional security)</span><br>
+    sudo ufw allow from YOUR-IP-ADDRESS to any port 22<br><br>
+
+
+    <span class="comment"># View current SSH connections</span><br>
+    who<br>
+    <span class="comment"># or</span><br>
+    w<br>
+
+  </div>
 
 
 
@@ -928,6 +1018,52 @@
 
     <span class="comment"># View banned IPs</span><br>
     sudo fail2ban-client status sshd<br><br>
+
+  </div>
+  <div class="code-box">
+
+    <span class="comment"># Install figlet for ASCII logo</span><br>
+    sudo apt update<br>
+    sudo apt install figlet -y<br><br>
+
+    <span class="comment"># Generate ASCII logo (copy output for later use)</span><br>
+    figlet "DAUDI SERVER"<br><br>
+
+    <span class="comment"># Create custom MOTD script (dynamic banner)</span><br>
+    sudo nano /etc/update-motd.d/01-daudi<br><br>
+
+    <span class="comment"># Example script content</span><br>
+    #!/bin/bash<br>
+    echo "================================="<br>
+    figlet "DAUDI SERVER"<br>
+    echo "================================="<br>
+    echo "Hostname: $(hostname)"<br>
+    echo "Uptime: $(uptime -p)"<br>
+    echo "Memory usage:"<br>
+    free -h<br><br>
+
+    <span class="comment"># Make the script executable</span><br>
+    sudo chmod +x /etc/update-motd.d/01-daudi<br><br>
+
+    <span class="comment"># Test MOTD output without logging out</span><br>
+    run-parts /etc/update-motd.d/<br><br>
+
+    <span class="comment"># Edit static MOTD (optional)</span><br>
+    sudo nano /etc/motd<br><br>
+
+    <span class="comment"># Create SSH pre-login banner</span><br>
+    sudo nano /etc/issue.net<br><br>
+
+    <span class="comment"># Enable banner in SSH configuration</span><br>
+    sudo nano /etc/ssh/sshd_config<br>
+    # Add or modify:<br>
+    Banner /etc/issue.net<br><br>
+
+    <span class="comment"># Restart SSH service</span><br>
+    sudo systemctl restart ssh<br><br>
+
+    <span class="comment"># Disable unwanted default MOTD scripts (optional)</span><br>
+    sudo chmod -x /etc/update-motd.d/50-motd-news<br><br>
 
   </div>
 
@@ -1055,6 +1191,44 @@ Connection closed by remote host.</span><br>
     $ nano /etc/vsftpd/vsftpd.conf
     ...
     allow_writeable_chroot=YES<br>
+
+  </div>
+  <div class="code-box">
+
+    <span class="comment"># Step 4: Fix existing files uploaded by ftp-user</span><br>
+    <span class="comment"># These files currently have permission 600 (rw-------) which blocks the web server</span><br>
+    <span class="comment"># Change permissions so the web server group (www-data) can read them</span><br>
+    sudo chmod 664 /var/www/html/freeradius3-pfsense.html<br>
+    sudo chmod 664 /var/www/html/mysql-remote.html<br>
+    sudo chmod 664 /var/www/html/samba.html<br><br>
+
+    <span class="comment"># Fix all files uploaded by ftp-user at once</span><br>
+    sudo find /var/www/html -type f -user ftp-user -exec chmod 664 {} \;<br><br>
+
+    <span class="comment"># Ensure directories allow group access</span><br>
+    sudo find /var/www/html -type d -exec chmod 775 {} \;<br><br>
+
+
+    <span class="comment"># Step 5: Configure system so future FTP uploads work automatically</span><br>
+
+    <span class="comment"># Set directory owner and group</span><br>
+    sudo chown -R ftp-user:www-data /var/www/html<br><br>
+
+    <span class="comment"># Enable setgid so new files inherit the www-data group</span><br>
+    sudo chmod g+s /var/www/html<br><br>
+
+    <span class="comment"># Configure FTP server default permission mask</span><br>
+    <span class="comment"># Edit vsftpd configuration</span><br>
+    sudo nano /etc/vsftpd.conf<br><br>
+
+    <span class="comment"># Add or modify this line</span><br>
+    local_umask=002 &nbsp;&nbsp;<span class="comment"># Files will be 664 and directories 775</span><br><br>
+
+    <span class="comment"># Restart FTP server to apply changes</span><br>
+    sudo systemctl restart vsftpd<br><br>
+
+    <span class="comment"># Verify permissions after upload</span><br>
+    ls -la /var/www/html<br>
 
   </div>
 

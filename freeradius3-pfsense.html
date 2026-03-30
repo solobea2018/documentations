@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>pfSense FreeRADIUS + MySQL Documentation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Installation</h2>
+  <a href="#install-pfsense">Install pfSense</a>
+  <a href="#install-freeradius">Install FreeRADIUS Package</a>
+  <a href="#install-mysql">Install MySQL Server</a>
+
+  <h2>Configuration</h2>
+  <a href="#radius-server">Configure RADIUS Server</a>
+  <a href="#mysql-backend">Configure MySQL Backend</a>
+  <a href="#add-users">Add Users</a>
+
+  <h2>pfSense Integration</h2>
+  <a href="#auth-server">Add RADIUS Authentication Server</a>
+  <a href="#captive-portal">Enable Captive Portal (Optional)</a>
+
+  <h2>Firewall & Security</h2>
+  <a href="#ufw-firewall">Firewall Rules</a>
+  <a href="#security-tips">Security Tips</a>
+
+  <h2>Testing & Troubleshooting</h2>
+  <a href="#test-radius">Test RADIUS Authentication</a>
+  <a href="#logs">Check Logs</a>
+</div>
+
+<div class="main">
+
+  <h1 style="color:#003399;">pfSense FreeRADIUS + MySQL Documentation</h1>
+  <p>This guide covers configuring FreeRADIUS with a MySQL backend on pfSense, including installation, user management, pfSense integration, firewall setup, and testing.</p>
+
+  <!-- INSTALL PFSENSE -->
+  <h2 id="install-pfsense" class="section-title">Install pfSense</h2>
+  <div class="code-box">
+    <span class="comment"># Download pfSense ISO from official site</span><br>
+    # https://www.pfsense.org/download/<br><br>
+
+    <span class="comment"># Install on server/VM and complete initial setup</span>
+  </div>
+
+  <!-- INSTALL FREERADIUS -->
+  <h2 id="install-freeradius" class="section-title">Install FreeRADIUS Package on pfSense</h2>
+  <div class="code-box">
+    <span class="comment"># Navigate in pfSense Web GUI:</span><br>
+    System → Package Manager → Available Packages → FreeRADIUS<br>
+    Click "Install" and wait for completion
+  </div>
+
+  <!-- INSTALL MYSQL -->
+  <h2 id="install-mysql" class="section-title">Install MySQL Server</h2>
+  <div class="code-box">
+    <span class="comment"># On Linux backend</span><br>
+    sudo apt update<br>
+    sudo apt install mysql-server -y<br><br>
+
+    <span class="comment"># Secure MySQL installation</span><br>
+    sudo mysql_secure_installation
+  </div>
+
+  <!-- CONFIGURE RADIUS SERVER -->
+  <h2 id="radius-server" class="section-title">Configure RADIUS Server</h2>
+  <div class="code-box">
+    <span class="comment"># In pfSense Web GUI:</span><br>
+    Services → FreeRADIUS → Servers → Add<br><br>
+
+    <span class="comment"># Example settings:</span><br>
+    Interface: LAN<br>
+    Shared Secret: radiussecret<br>
+    Authentication Port: 1812<br>
+    Accounting Port: 1813
+  </div>
+
+  <!-- MYSQL BACKEND -->
+  <h2 id="mysql-backend" class="section-title">Configure MySQL Backend</h2>
+  <div class="code-box">
+    <span class="comment"># In FreeRADIUS GUI → NAS / Authentication → Backend</span><br>
+    Backend Type: SQL<br>
+    SQL Module: MySQL<br>
+    Host: 127.0.0.1 or MySQL server IP<br>
+    Database: radius<br>
+    Username: radiususer<br>
+    Password: StrongPassword<br><br>
+
+    <span class="comment"># On MySQL, create database and tables</span><br>
+    CREATE DATABASE radius;<br>
+    CREATE USER 'radiususer'@'localhost' IDENTIFIED BY 'StrongPassword';<br>
+    GRANT ALL PRIVILEGES ON radius.* TO 'radiususer'@'localhost';<br>
+    FLUSH PRIVILEGES;
+  </div>
+
+  <!-- ADD USERS -->
+  <h2 id="add-users" class="section-title">Add RADIUS Users</h2>
+  <div class="code-box">
+    <span class="comment"># Option 1: Via MySQL directly</span><br>
+    INSERT INTO radcheck (username, attribute, op, value) VALUES ('user1','Cleartext-Password',':','password123');<br><br>
+
+    <span class="comment"># Option 2: Via FreeRADIUS GUI</span><br>
+    Services → FreeRADIUS → Users → Add User
+  </div>
+
+  <!-- AUTH SERVER -->
+  <h2 id="auth-server" class="section-title">Add RADIUS Authentication Server in pfSense</h2>
+  <div class="code-box">
+    System → User Manager → Authentication Servers → Add<br>
+    Type: RADIUS<br>
+    Hostname: pfSense IP<br>
+    Shared Secret: radiussecret<br>
+    Port: 1812<br>
+    Timeout: 5
+  </div>
+
+  <!-- CAPTIVE PORTAL -->
+  <h2 id="captive-portal" class="section-title">Enable Captive Portal (Optional)</h2>
+  <div class="code-box">
+    Services → Captive Portal → Add<br>
+    Interface: LAN or Guest<br>
+    Authentication: RADIUS<br>
+    RADIUS Server: select your configured server<br>
+    Apply
+  </div>
+
+  <!-- FIREWALL -->
+  <h2 id="ufw-firewall" class="section-title">Firewall Rules</h2>
+  <div class="code-box">
+    <span class="comment"># Ensure pfSense LAN/WAN rules allow:</span><br>
+    UDP 1812 (Authentication)<br>
+    UDP 1813 (Accounting)<br>
+    TCP 3306 (if MySQL is remote)<br>
+    <br>
+    <span class="comment"># Optional: limit access by IP</span><br>
+    # pfSense → Firewall → Rules → LAN/WAN
+  </div>
+
+  <!-- SECURITY -->
+  <h2 id="security-tips" class="section-title">Security Tips</h2>
+  <div class="code-box">
+    <span class="comment"># Use strong shared secrets for RADIUS</span><br>
+    <br>
+    <span class="comment"># Use VPN if RADIUS or MySQL is exposed to internet</span><br>
+    <br>
+    <span class="comment"># Keep FreeRADIUS & MySQL updated</span><br>
+    <br>
+    <span class="comment"># Restrict MySQL user host access (avoid '%')</span>
+  </div>
+
+  <!-- TEST RADIUS -->
+  <h2 id="test-radius" class="section-title">Test RADIUS Authentication</h2>
+  <div class="code-box">
+    <span class="comment"># On pfSense CLI or Linux radius client:</span><br>
+    radtest user1 password123 pfSense_IP 0 radiussecret
+  </div>
+
+  <!-- LOGS -->
+  <h2 id="logs" class="section-title">Check Logs</h2>
+  <div class="code-box">
+    <span class="comment"># FreeRADIUS logs on pfSense</span><br>
+    /var/log/freeradius/radius.log<br><br>
+
+    <span class="comment"># MySQL logs (Linux)</span><br>
+    sudo tail -f /var/log/mysql/error.log
+  </div>
+
+</div>
+</body>
+</html>

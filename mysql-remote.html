@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MySQL Remote Access Documentation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Installation</h2>
+  <a href="#install">Install MySQL</a>
+  <a href="#check">Check Version</a>
+
+  <h2>User & Privileges</h2>
+  <a href="#create-user">Create Remote User</a>
+  <a href="#grant">Grant Privileges</a>
+  <a href="#flush">Flush Privileges</a>
+
+  <h2>Configuration</h2>
+  <a href="#bind-address">Edit bind-address</a>
+  <a href="#mycnf">Edit my.cnf</a>
+
+  <h2>Firewall & Security</h2>
+  <a href="#ufw">Allow MySQL in UFW</a>
+  <a href="#ports">Port & IP Restrictions</a>
+  <a href="#security">Security Tips</a>
+
+  <h2>Testing & Troubleshooting</h2>
+  <a href="#test">Test Remote Connection</a>
+  <a href="#logs">Check Logs</a>
+</div>
+
+<div class="main">
+
+  <h1 style="color:#003399;">MySQL Remote Access Documentation</h1>
+  <p>This guide covers setting up MySQL for remote access on Linux, including creating users, granting privileges, firewall setup, and testing.</p>
+
+  <!-- INSTALL -->
+  <h2 id="install" class="section-title">Install MySQL</h2>
+  <div class="code-box">
+    <span class="comment"># Update packages</span><br>
+    sudo apt update<br><br>
+
+    <span class="comment"># Install MySQL server</span><br>
+    sudo apt install mysql-server -y
+  </div>
+
+  <!-- CHECK VERSION -->
+  <h2 id="check" class="section-title">Check MySQL Version</h2>
+  <div class="code-box">
+    mysql --version
+  </div>
+
+  <!-- CREATE USER -->
+  <h2 id="create-user" class="section-title">Create Remote MySQL User</h2>
+  <div class="code-box">
+    <span class="comment"># Log in as root</span><br>
+    sudo mysql -u root -p<br><br>
+
+    <span class="comment"># Create user (replace USER, PASSWORD, and IP)</span><br>
+    CREATE USER 'remoteuser'@'192.168.1.50' IDENTIFIED BY 'StrongPassword';<br><br>
+
+    <span class="comment"># Or allow any IP (less secure)</span><br>
+    CREATE USER 'remoteuser'@'%' IDENTIFIED BY 'StrongPassword';
+  </div>
+
+  <!-- GRANT PRIVILEGES -->
+  <h2 id="grant" class="section-title">Grant Privileges</h2>
+  <div class="code-box">
+    GRANT ALL PRIVILEGES ON database_name.* TO 'remoteuser'@'192.168.1.50';<br>
+    <br>
+    GRANT ALL PRIVILEGES ON database_name.* TO 'remoteuser'@'%'; <span class="comment"># For wildcard access</span>
+  </div>
+
+  <!-- FLUSH PRIVILEGES -->
+  <h2 id="flush" class="section-title">Apply Privileges</h2>
+  <div class="code-box">
+    FLUSH PRIVILEGES;
+  </div>
+
+  <!-- BIND ADDRESS -->
+  <h2 id="bind-address" class="section-title">Edit bind-address</h2>
+  <div class="code-box">
+    <span class="comment"># Edit MySQL config</span><br>
+    sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf<br><br>
+
+    <span class="comment"># Find and change:</span><br>
+    bind-address = 0.0.0.0 <span class="comment"># 0.0.0.0 allows all interfaces</span>
+  </div>
+
+  <!-- MYCNF -->
+  <h2 id="mycnf" class="section-title">Optional: my.cnf Firewall & Network</h2>
+  <div class="code-box">
+    <span class="comment"># Make sure skip-networking is disabled</span><br>
+    skip-networking = 0
+  </div>
+
+  <!-- UFW -->
+  <h2 id="ufw" class="section-title">Allow MySQL in UFW</h2>
+  <div class="code-box">
+    sudo ufw allow 3306/tcp<br>
+    sudo ufw reload
+  </div>
+
+  <!-- PORTS -->
+  <h2 id="ports" class="section-title">Port & IP Restrictions</h2>
+  <div class="code-box">
+    <span class="comment"># Allow only specific IP</span><br>
+    sudo ufw allow from 192.168.1.50 to any port 3306<br><br>
+
+    <span class="comment"># Allow from subnet</span><br>
+    sudo ufw allow from 192.168.1.0/24 to any port 3306
+  </div>
+
+  <!-- SECURITY -->
+  <h2 id="security" class="section-title">Security Tips</h2>
+  <div class="code-box">
+    <span class="comment"># Use strong passwords for all MySQL users</span><br>
+    <br>
+    <span class="comment"># Avoid '%' wildcard unless necessary</span><br>
+    <br>
+    <span class="comment"># Consider VPN or SSH tunnel for public servers</span><br>
+    <br>
+    <span class="comment"># Do not expose MySQL directly to the internet</span>
+  </div>
+
+  <!-- TEST -->
+  <h2 id="test" class="section-title">Test Remote Connection</h2>
+  <div class="code-box">
+    <span class="comment"># From remote Linux machine</span><br>
+    mysql -u remoteuser -p -h SERVER_IP<br><br>
+
+    <span class="comment"># From Windows using MySQL Workbench</span><br>
+    Hostname: SERVER_IP<br>
+    Username: remoteuser<br>
+    Password: StrongPassword
+  </div>
+
+  <!-- LOGS -->
+  <h2 id="logs" class="section-title">Check MySQL Logs</h2>
+  <div class="code-box">
+    sudo tail -f /var/log/mysql/error.log<br>
+    sudo tail -f /var/log/mysql/mysql.log
+  </div>
+
+</div>
+</body>
+</html>

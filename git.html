@@ -230,6 +230,27 @@
         <span class="comment"># OR use SSH instead (recommended)</span><br>
         git remote set-url origin git@github.com:user/repo.git
     </div>
+    <div class="code-box">
+
+        <span class="comment"># Remove a configuration from the local repository</span><br>
+        git config --unset user.name<br>
+        git config --unset user.email<br><br>
+
+        <span class="comment"># Remove configuration from global Git settings</span><br>
+        git config --global --unset user.name<br>
+        git config --global --unset user.email<br><br>
+
+        <span class="comment"># Remove configuration from system-wide settings</span><br>
+        sudo git config --system --unset user.name<br>
+        sudo git config --system --unset user.email<br><br>
+
+        <span class="comment"># Verify current configuration</span><br>
+        git config --list<br><br>
+
+        <span class="comment"># Remove an entire section (example)</span><br>
+        git config --remove-section user<br>
+
+    </div>
 
     <!-- RECOVERY -->
     <h2 id="recover" class="section-title">Recover Deleted Work</h2>
