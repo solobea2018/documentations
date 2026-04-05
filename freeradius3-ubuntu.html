@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FreeRADIUS Full Documentation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+  <h2>Installation</h2>
+  <a href="#install">Install FreeRADIUS</a>
+  <a href="#check-version">Check Version</a>
+
+  <h2>Service Management</h2>
+  <a href="#start-service">Start & Enable Service</a>
+  <a href="#debug-mode">Run Debug Mode</a>
+
+  <h2>Basic Configuration</h2>
+  <a href="#config-files">Configuration Files</a>
+  <a href="#create-user">Create Local Test User</a>
+  <a href="#test-auth">Test Authentication</a>
+
+  <h2>FreeRADIUS Utilities</h2>
+  <a href="#radtest">radtest</a>
+  <a href="#radclient">radclient</a>
+  <a href="#radsniff">radsniff</a>
+
+  <h2>Using Without SQL</h2>
+  <a href="#files-auth">Users File Authentication</a>
+  <a href="#files-example">Example User Config</a>
+
+  <h2>Using MySQL</h2>
+  <a href="#install-mysql">Install MySQL</a>
+  <a href="#create-db">Create Database</a>
+  <a href="#import-schema">Import Schema</a>
+  <a href="#enable-sql">Enable SQL Module</a>
+  <a href="#add-sql-user">Add User to SQL</a>
+
+  <h2>Network Devices</h2>
+  <a href="#clients-conf">Configure Clients</a>
+  <a href="#pfsense">pfSense Integration</a>
+
+  <h2>Ports</h2>
+  <a href="#radius-ports">RADIUS Ports</a>
+
+  <h2>Troubleshooting</h2>
+  <a href="#service-failed">Service Failed</a>
+  <a href="#port-error">Port 1812 Already in Use</a>
+  <a href="#sql-error">SQL Connection Errors</a>
+  <a href="#logs">Check Logs</a>
+
+</div>
+
+
+<div class="main">
+
+  <h1 style="color:#003399;">FreeRADIUS Full Documentation</h1>
+
+  <p>
+    This guide covers installation and configuration of FreeRADIUS including authentication without SQL, database authentication with MySQL, utilities, testing, integration with pfSense, and troubleshooting.
+  </p>
+
+
+  <!-- INSTALL -->
+
+  <h2 id="install" class="section-title">Install FreeRADIUS</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Update packages</span><br>
+    sudo apt update<br><br>
+
+    <span class="comment"># Install FreeRADIUS</span><br>
+    sudo apt install freeradius freeradius-utils -y
+
+  </div>
+
+
+  <h2 id="check-version" class="section-title">Check FreeRADIUS Version</h2>
+
+  <div class="code-box">
+
+    freeradius -v
+
+  </div>
+
+
+  <!-- SERVICE -->
+
+  <h2 id="start-service" class="section-title">Start & Enable Service</h2>
+
+  <div class="code-box">
+
+    sudo systemctl start freeradius<br>
+    sudo systemctl enable freeradius<br><br>
+
+    <span class="comment"># Check service status</span><br>
+    sudo systemctl status freeradius
+
+  </div>
+
+
+  <h2 id="debug-mode" class="section-title">Run Debug Mode</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Stop service first</span><br>
+    sudo systemctl stop freeradius<br><br>
+
+    <span class="comment"># Run debug mode</span><br>
+    sudo freeradius -X
+
+  </div>
+
+
+  <!-- CONFIG -->
+
+  <h2 id="config-files" class="section-title">Important Configuration Files</h2>
+
+  <div class="code-box">
+
+    /etc/freeradius/3.0/<br><br>
+
+    clients.conf<br>
+    mods-enabled/<br>
+    mods-available/<br>
+    sites-enabled/<br>
+    sites-available/
+
+  </div>
+
+
+  <!-- LOCAL USER -->
+
+  <h2 id="create-user" class="section-title">Create Local Test User</h2>
+
+  <div class="code-box">
+
+    sudo nano /etc/freeradius/3.0/mods-config/files/authorize<br><br>
+
+    <span class="comment"># Add user</span><br>
+
+    testuser Cleartext-Password := "testpassword"
+
+  </div>
+
+
+  <h2 id="test-auth" class="section-title">Test Authentication</h2>
+
+  <div class="code-box">
+
+    radtest testuser testpassword localhost 0 testing123
+
+  </div>
+
+
+  <!-- UTILITIES -->
+
+  <h2 id="radtest" class="section-title">radtest Utility</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Test RADIUS authentication</span><br>
+
+    radtest username password server port secret
+
+  </div>
+
+
+  <h2 id="radclient" class="section-title">radclient Utility</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Send custom RADIUS request</span><br>
+
+    echo "User-Name=testuser,User-Password=testpassword" | radclient localhost auth testing123
+
+  </div>
+
+
+  <h2 id="radsniff" class="section-title">radsniff Utility</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Capture RADIUS packets</span><br>
+
+    sudo radsniff -i any
+
+  </div>
+
+
+  <!-- WITHOUT SQL -->
+
+  <h2 id="files-auth" class="section-title">Authentication Without SQL</h2>
+
+  <p>FreeRADIUS can authenticate users directly from the local files module.</p>
+
+  <div class="code-box">
+
+    sudo nano /etc/freeradius/3.0/mods-config/files/authorize
+
+  </div>
+
+
+  <h2 id="files-example" class="section-title">Example User Configuration</h2>
+
+  <div class="code-box">
+
+    john Cleartext-Password := "123456"<br>
+    Reply-Message := "Welcome John"
+
+  </div>
+
+
+  <!-- MYSQL -->
+
+  <h2 id="install-mysql" class="section-title">Install MySQL</h2>
+
+  <div class="code-box">
+
+    sudo apt install mysql-server freeradius-mysql -y
+
+  </div>
+
+
+  <h2 id="create-db" class="section-title">Create Radius Database</h2>
+
+  <div class="code-box">
+
+    sudo mysql -u root -p<br><br>
+
+    CREATE DATABASE radius;<br><br>
+
+    CREATE USER 'radius'@'localhost' IDENTIFIED BY 'StrongPassword';<br><br>
+
+    GRANT ALL PRIVILEGES ON radius.* TO 'radius'@'localhost';<br><br>
+
+    FLUSH PRIVILEGES;
+
+  </div>
+
+
+  <h2 id="import-schema" class="section-title">Import FreeRADIUS Schema</h2>
+
+  <div class="code-box">
+
+    sudo mysql -u radius -p radius &lt; /etc/freeradius/3.0/mods-config/sql/main/mysql/schema.sql
+
+  </div>
+
+
+  <h2 id="enable-sql" class="section-title">Enable SQL Module</h2>
+
+  <div class="code-box">
+
+    sudo ln -s /etc/freeradius/3.0/mods-available/sql /etc/freeradius/3.0/mods-enabled/
+
+  </div>
+
+
+  <h2 id="add-sql-user" class="section-title">Add User to Database</h2>
+
+  <div class="code-box">
+
+    INSERT INTO radcheck (username,attribute,op,value)<br>
+    VALUES ('testuser','Cleartext-Password',':=','testpassword');
+
+  </div>
+
+
+  <!-- CLIENTS -->
+
+  <h2 id="clients-conf" class="section-title">Configure Network Clients</h2>
+
+  <div class="code-box">
+
+    sudo nano /etc/freeradius/3.0/clients.conf<br><br>
+
+    client router {<br>
+    ipaddr = 192.168.1.1<br>
+    secret = testing123<br>
+    }
+
+  </div>
+
+
+  <h2 id="pfsense" class="section-title">pfSense Integration</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># In pfSense Captive Portal RADIUS settings</span><br>
+
+    Server IP: 192.168.1.10<br>
+    Authentication Port: 1812<br>
+    Accounting Port: 1813<br>
+    Shared Secret: testing123
+
+  </div>
+
+
+  <!-- PORTS -->
+
+  <h2 id="radius-ports" class="section-title">RADIUS Ports</h2>
+
+  <div class="code-box">
+
+    1812 - Authentication<br>
+    1813 - Accounting
+
+  </div>
+
+
+  <!-- TROUBLESHOOTING -->
+
+  <h2 id="service-failed" class="section-title">Service Failed to Start</h2>
+
+  <div class="code-box">
+
+    sudo systemctl status freeradius<br>
+    sudo journalctl -xeu freeradius
+
+  </div>
+
+
+  <h2 id="port-error" class="section-title">Port 1812 Already in Use</h2>
+
+  <div class="code-box">
+
+    sudo ss -tulpn | grep 1812<br><br>
+
+    <span class="comment"># Stop service using the port</span><br>
+
+    sudo systemctl stop freeradius
+
+  </div>
+
+
+  <h2 id="sql-error" class="section-title">SQL Connection Errors</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Run debug</span><br>
+
+    sudo freeradius -X
+
+  </div>
+
+
+  <h2 id="logs" class="section-title">Check FreeRADIUS Logs</h2>
+
+  <div class="code-box">
+
+    sudo tail -f /var/log/freeradius/radius.log
+
+  </div>
+
+
+</div>
+
+</body>
+</html>
