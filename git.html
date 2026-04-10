@@ -231,21 +231,22 @@
         git remote set-url origin git@github.com:user/repo.git
     </div>
     <!-- Git Credential Manager -->
-    <h2 id="gcm" class="section-title">Git Credential Manager Setup if not installed (Linux)</h2>
+    <!-- Git Credential Manager (Auto Install) -->
+    <h2 id="gcm" class="section-title">Git Credential Manager Setup (Linux - Recommended)</h2>
     <div class="code-box">
-        <span class="comment"># Download latest Git Credential Manager</span><br>
-        wget https://github.com/git-ecosystem/git-credential-manager/releases/latest/download/gcm-linux_amd64.deb<br><br>
+        <span class="comment"># Ensure curl is installed</span><br>
+        curl --version<br><br>
 
-        <span class="comment"># Install package (Debian/Ubuntu)</span><br>
-        sudo dpkg -i gcm-linux_amd64.deb<br><br>
+        <span class="comment"># Install curl if missing (Ubuntu/Debian)</span><br>
+        sudo apt update && sudo apt install curl -y<br><br>
 
-        <span class="comment"># Fix missing dependencies (if any)</span><br>
-        sudo apt-get install -f<br><br>
+        <span class="comment"># Download and install Git Credential Manager</span><br>
+        curl -L https://aka.ms/gcm/linux-install-source.sh | sh<br><br>
 
-        <span class="comment"># Configure Git to use Credential Manager</span><br>
-        git config --global credential.helper manager<br><br>
+        <span class="comment"># Configure Git to use it</span><br>
+        git-credential-manager configure<br><br>
 
-        <span class="comment"># Verify configuration</span><br>
+        <span class="comment"># Verify installation</span><br>
         git config --global --list
     </div>
     <!-- Alternative (Simple Credential Storage) -->
