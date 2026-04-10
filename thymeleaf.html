@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thymeleaf Full Basics</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Setup</h2>
+  <a href="#dependency">Add Dependency</a>
+  <a href="#structure">Project Structure</a>
+
+  <h2>Basics</h2>
+  <a href="#controller">Simple Controller</a>
+  <a href="#view">Simple View</a>
+
+  <h2>Data Binding</h2>
+  <a href="#variable">Display Variables</a>
+  <a href="#condition">Conditions</a>
+  <a href="#loop">Loops</a>
+
+  <h2>Forms</h2>
+  <a href="#form">Form Example</a>
+  <a href="#submit">Handle Submit</a>
+
+  <h2>Layout</h2>
+  <a href="#fragment">Fragments</a>
+</div>
+
+<div class="main">
+
+  <h1 style="color:#003399;">Thymeleaf Basics (Spring Boot)</h1>
+
+  <!-- DEPENDENCY -->
+  <h2 id="dependency" class="section-title">Add Dependency</h2>
+  <div class="code-box">
+    <span class="comment"># pom.xml</span><br>
+    &lt;dependency&gt;<br>
+    &nbsp;&nbsp;&lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;<br>
+    &nbsp;&nbsp;&lt;artifactId&gt;spring-boot-starter-thymeleaf&lt;/artifactId&gt;<br>
+    &lt;/dependency&gt;
+  </div>
+
+  <!-- STRUCTURE -->
+  <h2 id="structure" class="section-title">Project Structure</h2>
+  <div class="code-box">
+    src/main/resources/templates/<br>
+    ├── index.html<br>
+    ├── users.html
+  </div>
+
+  <!-- CONTROLLER -->
+  <h2 id="controller" class="section-title">Simple Controller</h2>
+  <div class="code-box">
+    <span class="comment">// Controller</span><br>
+    @Controller<br>
+    public class HomeController {<br><br>
+
+    &nbsp;&nbsp;@GetMapping("/")<br>
+    &nbsp;&nbsp;public String home(Model model) {<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;model.addAttribute("name", "John");<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;return "index";<br>
+    &nbsp;&nbsp;}<br>
+    }
+  </div>
+
+  <!-- VIEW -->
+  <h2 id="view" class="section-title">Simple View</h2>
+  <div class="code-box">
+    &lt;p th:text="${name}"&gt;Name&lt;/p&gt;<br>
+    <span class="comment"># Output: John</span>
+  </div>
+
+  <!-- VARIABLE -->
+  <h2 id="variable" class="section-title">Display Variables</h2>
+  <div class="code-box">
+    &lt;h3 th:text="${name}"&gt;&lt;/h3&gt;<br>
+    &lt;h3 th:text="${user.email}"&gt;&lt;/h3&gt;
+  </div>
+
+  <!-- CONDITION -->
+  <h2 id="condition" class="section-title">Conditions</h2>
+  <div class="code-box">
+    &lt;p th:if="${name == 'John'}"&gt;Hello John&lt;/p&gt;<br>
+    &lt;p th:unless="${name == 'John'}"&gt;Not John&lt;/p&gt;
+  </div>
+
+  <!-- LOOP -->
+  <h2 id="loop" class="section-title">Loop (List)</h2>
+  <div class="code-box">
+    <span class="comment">// Controller</span><br>
+    model.addAttribute("users", List.of("John","Jane","Mike"));<br><br>
+
+    <span class="comment">// HTML</span><br>
+    &lt;ul&gt;<br>
+    &nbsp;&nbsp;&lt;li th:each="u : ${users}" th:text="${u}"&gt;&lt;/li&gt;<br>
+    &lt;/ul&gt;
+  </div>
+
+  <!-- FORM -->
+  <h2 id="form" class="section-title">Form Example</h2>
+  <div class="code-box">
+    &lt;form th:action="@{/save}" method="post" th:object="${user}"&gt;<br>
+    &nbsp;&nbsp;&lt;input type="text" th:field="*{name}" /&gt;<br>
+    &nbsp;&nbsp;&lt;input type="email" th:field="*{email}" /&gt;<br>
+    &nbsp;&nbsp;&lt;button type="submit"&gt;Save&lt;/button&gt;<br>
+    &lt;/form&gt;
+  </div>
+
+  <!-- SUBMIT -->
+  <h2 id="submit" class="section-title">Handle Form Submit</h2>
+  <div class="code-box">
+    @PostMapping("/save")<br>
+    public String save(@ModelAttribute User user) {<br>
+    &nbsp;&nbsp;System.out.println(user.getName());<br>
+    &nbsp;&nbsp;return "redirect:/";<br>
+    }
+  </div>
+
+  <!-- FRAGMENT -->
+  <h2 id="fragment" class="section-title">Fragments (Reusable Layout)</h2>
+  <div class="code-box">
+    <span class="comment"># header.html</span><br>
+    &lt;div th:fragment="header"&gt;<br>
+    &nbsp;&nbsp;&lt;h2&gt;My App&lt;/h2&gt;<br>
+    &lt;/div&gt;<br><br>
+
+    <span class="comment"># use it</span><br>
+    &lt;div th:replace="header :: header"&gt;&lt;/div&gt;
+  </div>
+
+</div>
+</body>
+</html>
