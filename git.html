@@ -255,7 +255,35 @@
         <span class="comment"># Store credentials in plain text</span><br>
         git config --global credential.helper store
     </div>
-    <div class="code-box">
+    <div class="code-box"><!-- Git Credential Manager - Cache Behavior -->
+        <h2 id="gcm-cache" class="section-title">Credential Cache Behavior</h2>
+        <div class="code-box">
+            <span class="comment"># Use in-memory credential caching</span><br>
+            git config --global credential.credentialStore cache<br><br>
+
+            <span class="comment"># Optional: set cache timeout (in seconds)</span><br>
+            git config --global credential.helper "cache --timeout=3600"<br><br>
+
+            <span class="comment"># Check current configuration</span><br>
+            git config --global --list
+        </div>
+
+        <p>
+            <strong>Note:</strong> When using
+            :contentReference[oaicite:0]{index=0}
+            with <code>cache</code>, credentials are stored temporarily in memory.
+        </p>
+
+        <ul>
+            <li>✔ No repeated login during active session</li>
+            <li>❌ Credentials are cleared after system restart</li>
+            <li>❌ Credentials are lost when session ends</li>
+        </ul>
+
+        <p>
+            <strong>Tip:</strong> Use <code>cache</code> for servers (e.g., EC2).
+            For a permanent solution without repeated logins, consider using SSH authentication instead.
+        </p>
 
         <span class="comment"># Remove a configuration from the local repository</span><br>
         git config --unset user.name<br>
