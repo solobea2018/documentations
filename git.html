@@ -230,6 +230,30 @@
         <span class="comment"># OR use SSH instead (recommended)</span><br>
         git remote set-url origin git@github.com:user/repo.git
     </div>
+    <!-- Git Credential Manager -->
+    <h2 id="gcm" class="section-title">Git Credential Manager Setup if not installed (Linux)</h2>
+    <div class="code-box">
+        <span class="comment"># Download latest Git Credential Manager</span><br>
+        wget https://github.com/git-ecosystem/git-credential-manager/releases/latest/download/gcm-linux_amd64.deb<br><br>
+
+        <span class="comment"># Install package (Debian/Ubuntu)</span><br>
+        sudo dpkg -i gcm-linux_amd64.deb<br><br>
+
+        <span class="comment"># Fix missing dependencies (if any)</span><br>
+        sudo apt-get install -f<br><br>
+
+        <span class="comment"># Configure Git to use Credential Manager</span><br>
+        git config --global credential.helper manager<br><br>
+
+        <span class="comment"># Verify configuration</span><br>
+        git config --global --list
+    </div>
+    <!-- Alternative (Simple Credential Storage) -->
+    <h3 class="section-subtitle">Alternative: Store Credentials (Less Secure)</h3>
+    <div class="code-box">
+        <span class="comment"># Store credentials in plain text</span><br>
+        git config --global credential.helper store
+    </div>
     <div class="code-box">
 
         <span class="comment"># Remove a configuration from the local repository</span><br>
