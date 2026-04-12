@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spring Boot Deployment Documentation</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Build</h2>
+  <a href="#build">Package JAR</a>
+  <a href="#run-jar">Run JAR</a>
+
+  <h2>Linux Setup</h2>
+  <a href="#move-jar">Move JAR</a>
+  <a href="#create-user">Create Service User</a>
+
+  <h2>Systemd Service</h2>
+  <a href="#service-file">Create Service File</a>
+  <a href="#enable-service">Enable Service</a>
+  <a href="#manage-service">Manage Service</a>
+
+  <h2>Configuration</h2>
+  <a href="#profiles">Spring Profiles</a>
+  <a href="#port">Change Port</a>
+
+  <h2>Networking</h2>
+  <a href="#firewall">Firewall</a>
+  <a href="#access">Access App</a>
+
+  <h2>Reverse Proxy</h2>
+  <a href="#nginx">Nginx Setup</a>
+
+  <h2>Security</h2>
+  <a href="#security">Security Tips</a>
+
+  <h2>Troubleshooting</h2>
+  <a href="#logs">Logs</a>
+  <a href="#status">Check Status</a>
+</div>
+
+<div class="main">
+
+  <h1 style="color:#003399;">Spring Boot Deployment Documentation</h1>
+  <p>This guide explains how to package, deploy, and run a Spring Boot application on Linux using systemd, including production setup and security.</p>
+
+  <!-- BUILD -->
+  <h2 id="build" class="section-title">Package JAR</h2>
+  <div class="code-box">
+    <span class="comment"># Using Maven</span><br>
+    mvn clean package<br><br>
+
+    <span class="comment"># Output file</span><br>
+    target/app.jar
+  </div>
+
+  <!-- RUN -->
+  <h2 id="run-jar" class="section-title">Run JAR Manually</h2>
+  <div class="code-box">
+    java -jar target/app.jar
+  </div>
+
+  <!-- MOVE -->
+  <h2 id="move-jar" class="section-title">Move JAR to Server Directory</h2>
+  <div class="code-box">
+    sudo mkdir -p /opt/myapp<br>
+    sudo cp target/app.jar /opt/myapp/app.jar
+  </div>
+
+  <!-- USER -->
+  <h2 id="create-user" class="section-title">Create Service User</h2>
+  <div class="code-box">
+    sudo useradd -r -s /bin/false springuser<br>
+    sudo chown -R springuser:springuser /opt/myapp
+  </div>
+
+  <!-- SERVICE FILE -->
+  <h2 id="service-file" class="section-title">Create systemd Service</h2>
+  <div class="code-box">
+    sudo nano /etc/systemd/system/myapp.service<br><br>
+
+    [Unit]<br>
+    Description=Spring Boot App<br>
+    After=network.target<br><br>
+
+    [Service]<br>
+    User=springuser<br>
+    WorkingDirectory=/opt/myapp<br>
+    ExecStart=/usr/bin/java -jar /opt/myapp/app.jar<br>
+    SuccessExitStatus=143<br>
+    Restart=always<br>
+    RestartSec=5<br><br>
+
+    [Install]<br>
+    WantedBy=multi-user.target
+  </div>
+
+  <!-- ENABLE -->
+  <h2 id="enable-service" class="section-title">Enable Service (Auto Start)</h2>
+  <div class="code-box">
+    sudo systemctl daemon-reload<br>
+    sudo systemctl enable myapp<br>
+    sudo systemctl start myapp
+  </div>
+
+  <!-- MANAGE -->
+  <h2 id="manage-service" class="section-title">Manage Service</h2>
+  <div class="code-box">
+    sudo systemctl start myapp<br>
+    sudo systemctl stop myapp<br>
+    sudo systemctl restart myapp
+  </div>
+
+  <!-- PROFILES -->
+  <h2 id="profiles" class="section-title">Spring Profiles (Production)</h2>
+  <div class="code-box">
+    java -jar app.jar --spring.profiles.active=prod
+  </div>
+
+  <!-- PORT -->
+  <h2 id="port" class="section-title">Change Application Port</h2>
+  <div class="code-box">
+    java -jar app.jar --server.port=8081
+  </div>
+
+  <!-- FIREWALL -->
+  <h2 id="firewall" class="section-title">Allow Port in Firewall</h2>
+  <div class="code-box">
+    sudo ufw allow 8080<br>
+    sudo ufw reload
+  </div>
+
+  <!-- ACCESS -->
+  <h2 id="access" class="section-title">Access Application</h2>
+  <div class="code-box">
+    http://server-ip:8080
+  </div>
+
+  <!-- NGINX -->
+  <h2 id="nginx" class="section-title">Setup Nginx Reverse Proxy</h2>
+  <div class="code-box">
+    sudo apt install nginx<br><br>
+
+    sudo nano /etc/nginx/sites-available/myapp<br><br>
+
+    server {<br>
+    listen 80;<br>
+    server_name your-domain.com;<br><br>
+
+    location / {<br>
+    proxy_pass http://localhost:8080;<br>
+    proxy_set_header Host $host;<br>
+    proxy_set_header X-Real-IP $remote_addr;<br>
+    }<br>
+    }<br><br>
+
+    sudo ln -s /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/<br>
+    sudo systemctl restart nginx
+  </div>
+
+  <!-- SECURITY -->
+  <h2 id="security" class="section-title">Security Tips</h2>
+  <div class="code-box">
+    <span class="comment"># Do not run as root</span><br>
+    <span class="comment"># Use firewall rules</span><br>
+    <span class="comment"># Enable HTTPS with SSL</span><br>
+    <span class="comment"># Keep system updated</span>
+  </div>
+
+  <!-- LOGS -->
+  <h2 id="logs" class="section-title">View Logs</h2>
+  <div class="code-box">
+    journalctl -u myapp -f
+  </div>
+
+  <!-- STATUS -->
+  <h2 id="status" class="section-title">Check Service Status</h2>
+  <div class="code-box">
+    sudo systemctl status myapp
+  </div>
+
+</div>
+</body>
+</html>
