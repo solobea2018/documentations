@@ -2,9 +2,195 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>SSH Full Documentation</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>Installation</h2>
+    <a href="#install">Install SSH</a>
+    <a href="#check">Check Service</a>
+
+    <h2>Basic Configuration</h2>
+    <a href="#config">Configure SSH</a>
+    <a href="#port">Change Port</a>
+    <a href="#restart">Restart Service</a>
+
+    <h2>Users & Authentication</h2>
+    <a href="#login">Login Methods</a>
+    <a href="#keys">SSH Key Setup</a>
+
+    <h2>Firewall & Access</h2>
+    <a href="#ufw">Allow SSH in Firewall</a>
+    <a href="#cloud">Cloud Security Group</a>
+
+    <h2>Remote Access</h2>
+    <a href="#connect">Connect via SSH</a>
+    <a href="#windows">Windows Access</a>
+
+    <h2>Security</h2>
+    <a href="#hardening">Security Hardening</a>
+
+    <h2>Troubleshooting</h2>
+    <a href="#test">Test SSH Config</a>
+    <a href="#logs">Check Logs</a>
+    <a href="#errors">Common Errors</a>
+</div>
+
+<div class="main">
+
+    <h1 style="color:#003399;">SSH Full Documentation</h1>
+    <p>This guide covers SSH installation, configuration, key authentication, firewall setup, remote access, security, and troubleshooting.</p>
+
+    <!-- INSTALL -->
+    <h2 id="install" class="section-title">Install SSH Server</h2>
+    <div class="code-box">
+        <span class="comment"># Update system</span><br>
+        sudo apt update<br><br>
+
+        <span class="comment"># Install OpenSSH server</span><br>
+        sudo apt install openssh-server -y
+    </div>
+
+    <!-- CHECK -->
+    <h2 id="check" class="section-title">Check SSH Service</h2>
+    <div class="code-box">
+        systemctl status ssh<br>
+        ssh -V
+    </div>
+
+    <!-- CONFIG -->
+    <h2 id="config" class="section-title">Basic SSH Configuration</h2>
+    <div class="code-box">
+        sudo nano /etc/ssh/sshd_config<br><br>
+
+        <span class="comment"># Important settings</span><br>
+        PermitRootLogin no<br>
+        PasswordAuthentication yes<br>
+        PubkeyAuthentication yes
+    </div>
+
+    <!-- PORT -->
+    <h2 id="port" class="section-title">Change SSH Port</h2>
+    <div class="code-box">
+        sudo nano /etc/ssh/sshd_config<br><br>
+
+        <span class="comment"># Change default port 22</span><br>
+        Port 2222
+    </div>
+
+    <!-- RESTART -->
+    <h2 id="restart" class="section-title">Restart SSH Service</h2>
+    <div class="code-box">
+        sudo systemctl restart ssh<br>
+        sudo systemctl status ssh
+    </div>
+
+    <!-- LOGIN -->
+    <h2 id="login" class="section-title">SSH Login Methods</h2>
+    <div class="code-box">
+        <span class="comment"># Password login</span><br>
+        ssh user@server_ip<br><br>
+
+        <span class="comment"># Custom port</span><br>
+        ssh -p 2222 user@server_ip
+    </div>
+
+    <!-- KEYS -->
+    <h2 id="keys" class="section-title">SSH Key Authentication</h2>
+    <div class="code-box">
+        <span class="comment"># Generate key on client</span><br>
+        ssh-keygen -t rsa -b 4096<br><br>
+
+        <span class="comment"># Copy key to server</span><br>
+        ssh-copy-id user@server_ip<br><br>
+
+        <span class="comment"># Disable password login (optional)</span><br>
+        PasswordAuthentication no
+    </div>
+
+    <!-- UFW -->
+    <h2 id="ufw" class="section-title">Allow SSH in Firewall</h2>
+    <div class="code-box">
+        sudo ufw allow 22<br>
+        sudo ufw allow 2222<br>
+        sudo ufw reload
+    </div>
+
+    <!-- CLOUD -->
+    <h2 id="cloud" class="section-title">Cloud Security Group (AWS / VPS)</h2>
+    <div class="code-box">
+        <span class="comment"># Add inbound rule:</span><br>
+        Port: 2222<br>
+        Source: your IP or 0.0.0.0/0
+    </div>
+
+    <!-- CONNECT -->
+    <h2 id="connect" class="section-title">Connect via SSH</h2>
+    <div class="code-box">
+        ssh user@192.168.1.10<br>
+        ssh -p 2222 user@192.168.1.10
+    </div>
+
+    <!-- WINDOWS -->
+    <h2 id="windows" class="section-title">Windows SSH Access</h2>
+    <div class="code-box">
+        <span class="comment"># PowerShell / CMD</span><br>
+        ssh user@server_ip<br><br>
+
+        <span class="comment"># If custom port</span><br>
+        ssh -p 2222 user@server_ip
+    </div>
+
+    <!-- HARDENING -->
+    <h2 id="hardening" class="section-title">SSH Security Hardening</h2>
+    <div class="code-box">
+        <span class="comment"># Disable root login</span><br>
+        PermitRootLogin no<br><br>
+
+        <span class="comment"># Change default port</span><br>
+        Port 2222<br><br>
+
+        <span class="comment"># Use keys only</span><br>
+        PasswordAuthentication no
+    </div>
+
+    <!-- TEST -->
+    <h2 id="test" class="section-title">Test SSH Configuration</h2>
+    <div class="code-box">
+        sudo sshd -t<br>
+        sudo sshd -T | grep port
+    </div>
+
+    <!-- LOGS -->
+    <h2 id="logs" class="section-title">Check SSH Logs</h2>
+    <div class="code-box">
+        sudo journalctl -u ssh -f<br>
+        sudo tail -f /var/log/auth.log
+    </div>
+
+    <!-- ERRORS -->
+    <h2 id="errors" class="section-title">Common Problems & Fixes</h2>
+    <div class="code-box">
+
+        <span class="comment"># Service not listening on new port</span><br>
+        sudo systemctl restart ssh<br><br>
+
+        <span class="comment"># Host key changed warning</span><br>
+        ssh-keygen -R "[server_ip]:2222"<br><br>
+
+        <span class="comment"># Connection refused</span><br>
+        sudo ufw allow 2222<br>
+        sudo systemctl restart ssh<br><br>
+
+        <span class="comment"># Check active port</span><br>
+        sudo ss -tulnp | grep ssh
+
+    </div>
+
+</div>
 </body>
 </html>
