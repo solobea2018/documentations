@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fail2Ban & Server Security Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>Installation</h2>
+    <a href="#install">Install Fail2Ban</a>
+    <a href="#status">Check Status</a>
+
+    <h2>Core Setup</h2>
+    <a href="#jail">Jail Configuration</a>
+    <a href="#restart">Restart Service</a>
+
+    <h2>SSH Protection</h2>
+    <a href="#ssh">Secure SSH</a>
+
+    <h2>Web Protection</h2>
+    <a href="#apache">Apache Auth</a>
+    <a href="#custom">Custom Login Forms</a>
+
+    <h2>Database Protection</h2>
+    <a href="#mysql">MySQL Protection</a>
+
+    <h2>File Services</h2>
+    <a href="#ftp">FTP Protection</a>
+    <a href="#samba">Samba Protection</a>
+
+    <h2>Firewall & Access</h2>
+    <a href="#firewall">Firewall Setup</a>
+
+    <h2>Best Practices</h2>
+    <a href="#hardening">Security Hardening</a>
+
+    <h2>Troubleshooting</h2>
+    <a href="#logs">Check Logs</a>
+    <a href="#errors">Common Errors</a>
+</div>
+
+<div class="main">
+
+    <h1 style="color:#003399;">Fail2Ban & Server Security Guide</h1>
+    <p>This guide covers installation, configuration, and protection for SSH, web apps, MySQL, FTP, Samba, and custom systems.</p>
+
+    <!-- INSTALL -->
+    <h2 id="install" class="section-title">Install Fail2Ban</h2>
+    <div class="code-box">
+        sudo apt update<br>
+        sudo apt install fail2ban -y<br><br>
+        sudo systemctl enable fail2ban
+    </div>
+
+    <!-- STATUS -->
+    <h2 id="status" class="section-title">Check Service Status</h2>
+    <div class="code-box">
+        sudo systemctl status fail2ban<br>
+        sudo fail2ban-client status
+    </div>
+
+    <!-- JAIL -->
+    <h2 id="jail" class="section-title">Basic Configuration</h2>
+    <div class="code-box">
+        sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local<br>
+        sudo nano /etc/fail2ban/jail.local<br><br>
+
+        ignoreip = 127.0.0.1/8 YOUR_IP<br>
+        bantime = 3600<br>
+        findtime = 600<br>
+        maxretry = 3
+    </div>
+
+    <!-- RESTART -->
+    <h2 id="restart" class="section-title">Restart Fail2Ban</h2>
+    <div class="code-box">
+        sudo systemctl restart fail2ban
+    </div>
+
+    <!-- SSH -->
+    <h2 id="ssh" class="section-title">SSH Protection</h2>
+    <div class="code-box">
+        [sshd]<br>
+        enabled = true<br>
+        port = ssh<br>
+        maxretry = 3<br>
+        bantime = 3600
+    </div>
+
+    <!-- APACHE -->
+    <h2 id="apache" class="section-title">Apache Authentication Protection</h2>
+    <div class="code-box">
+        [apache-auth]<br>
+        enabled = true<br>
+        port = http,https<br>
+        logpath = /var/log/apache2/error.log
+    </div>
+
+    <!-- CUSTOM -->
+    <h2 id="custom" class="section-title">Custom Login Protection</h2>
+    <div class="code-box">
+        # Example log<br>
+        LOGIN FAILED ip=192.168.1.10 user=admin<br><br>
+
+        # Filter<br>
+        sudo nano /etc/fail2ban/filter.d/myapp.conf<br><br>
+
+        [Definition]<br>
+        failregex = LOGIN FAILED.*ip=&lt;HOST&gt;<br><br>
+
+        # Jail<br>
+        [myapp]<br>
+        enabled = true<br>
+        filter = myapp<br>
+        logpath = /var/log/myapp.log
+    </div>
+
+    <!-- MYSQL -->
+    <h2 id="mysql" class="section-title">MySQL Protection</h2>
+    <div class="code-box">
+        # Enable logs<br>
+        /var/log/mysql/error.log<br><br>
+
+        # Filter<br>
+        failregex = Access denied for user '.*'@'&lt;HOST&gt;'<br><br>
+
+        # Jail<br>
+        [mysql]<br>
+        enabled = true<br>
+        port = 3306<br>
+        logpath = /var/log/mysql/error.log
+    </div>
+
+    <!-- FTP -->
+    <h2 id="ftp" class="section-title">FTP Protection (vsftpd)</h2>
+    <div class="code-box">
+        # Log<br>
+        /var/log/vsftpd.log<br><br>
+
+        # Filter<br>
+        failregex = FAIL LOGIN: Client "&lt;HOST&gt;"<br><br>
+
+        # Jail<br>
+        [vsftpd]<br>
+        enabled = true<br>
+        port = ftp,ftp-data<br>
+        logpath = /var/log/vsftpd.log
+    </div>
+
+    <!-- SAMBA -->
+    <h2 id="samba" class="section-title">Samba Protection</h2>
+    <div class="code-box">
+        # Log<br>
+        /var/log/samba/log.smbd<br><br>
+
+        # Filter<br>
+        failregex = authentication.*FAILED.*from &lt;HOST&gt;<br><br>
+
+        # Jail<br>
+        [samba]<br>
+        enabled = true<br>
+        port = 445,139<br>
+        logpath = /var/log/samba/log.smbd
+    </div>
+
+    <!-- FIREWALL -->
+    <h2 id="firewall" class="section-title">Firewall Setup (UFW)</h2>
+    <div class="code-box">
+        sudo ufw enable<br>
+        sudo ufw allow 22<br>
+        sudo ufw allow 80<br>
+        sudo ufw allow 443<br>
+        sudo ufw reload
+    </div>
+
+    <!-- HARDENING -->
+    <h2 id="hardening" class="section-title">Security Hardening</h2>
+    <div class="code-box">
+        # Disable root SSH<br>
+        PermitRootLogin no<br><br>
+
+        # Change SSH port<br>
+        Port 2222<br><br>
+
+        # MySQL local only<br>
+        bind-address = 127.0.0.1<br><br>
+
+        # Disable anonymous FTP<br>
+        anonymous_enable=NO<br><br>
+
+        # Samba local network only<br>
+        (block ports 445,139 from internet)
+    </div>
+
+    <!-- LOGS -->
+    <h2 id="logs" class="section-title">Check Logs</h2>
+    <div class="code-box">
+        sudo tail -f /var/log/auth.log<br>
+        sudo tail -f /var/log/fail2ban.log
+    </div>
+
+    <!-- ERRORS -->
+    <h2 id="errors" class="section-title">Common Problems & Fixes</h2>
+    <div class="code-box">
+
+        # Fail2Ban not banning<br>
+        sudo fail2ban-client status<br><br>
+
+        # Wrong log path<br>
+        check actual log file location<br><br>
+
+        # Regex not matching<br>
+        fail2ban-regex /log/file /filter.conf<br><br>
+
+        # Locked yourself out<br>
+        sudo fail2ban-client set sshd unbanip YOUR_IP
+
+    </div>
+
+</div>
+</body>
+</html>
