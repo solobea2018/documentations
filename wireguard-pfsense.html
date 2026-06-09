@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>pfSense WireGuard VPN Setup Guide</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Installation</h2>
+  <a href="#package">Install WireGuard</a>
+
+  <h2>Server Setup</h2>
+  <a href="#tunnel">Create Tunnel</a>
+  <a href="#peer">Add Peer</a>
+
+  <h2>Interface</h2>
+  <a href="#interface">Assign Interface</a>
+
+  <h2>Firewall</h2>
+  <a href="#wan">WAN Rule</a>
+  <a href="#wgfirewall">WireGuard Rule</a>
+
+  <h2>Networking</h2>
+  <a href="#nat">NAT Setup</a>
+
+  <h2>Client</h2>
+  <a href="#client">Client Config</a>
+
+  <h2>Service</h2>
+  <a href="#start">Enable WireGuard</a>
+
+  <h2>Testing</h2>
+  <a href="#test">Test Connection</a>
+
+  <h2>Troubleshooting</h2>
+  <a href="#issues">Common Issues</a>
+</div>
+
+<div class="main">
+
+  <h1 style="color:#003399;">pfSense WireGuard VPN Setup Guide</h1>
+
+  <!-- INSTALL -->
+  <h2 id="package" class="section-title">Install WireGuard Package</h2>
+  <div class="code-box">
+    <span class="comment"># Go to pfSense Web UI</span><br>
+    System → Package Manager → Available Packages<br><br>
+
+    <span class="comment"># Search and install</span><br>
+    wireguard<br>
+    wireguard-tools
+  </div>
+
+  <!-- TUNNEL -->
+  <h2 id="tunnel" class="section-title">Create WireGuard Tunnel (Server)</h2>
+  <div class="code-box">
+    <span class="comment"># Navigate</span><br>
+    VPN → WireGuard → Tunnels → Add<br><br>
+
+    <span class="comment"># Enable tunnel</span><br>
+    Enable: ✔<br><br>
+
+    <span class="comment"># Generate keys</span><br>
+    Click "Generate"<br><br>
+
+    <span class="comment"># Configure</span><br>
+    Listen Port: 51820<br>
+    Tunnel Address: 10.10.0.1/24
+  </div>
+
+  <!-- PEER -->
+  <h2 id="peer" class="section-title">Add Peer (Client)</h2>
+  <div class="code-box">
+    <span class="comment"># Navigate</span><br>
+    VPN → WireGuard → Peers → Add<br><br>
+
+    <span class="comment"># Add client details</span><br>
+    Description: client1<br>
+    Public Key: CLIENT_PUBLIC_KEY<br>
+    Allowed IPs: 10.10.0.2/32<br>
+    PersistentKeepalive: 25
+  </div>
+
+  <!-- INTERFACE -->
+  <h2 id="interface" class="section-title">Assign WireGuard Interface</h2>
+  <div class="code-box">
+    <span class="comment"># Navigate</span><br>
+    Interfaces → Assignments<br><br>
+
+    <span class="comment"># Add new interface</span><br>
+    Select WireGuard → Add<br><br>
+
+    <span class="comment"># Enable interface</span><br>
+    Enable ✔<br>
+    Name: WG
+  </div>
+
+  <!-- WAN RULE -->
+  <h2 id="wan" class="section-title">Allow WireGuard on WAN</h2>
+  <div class="code-box">
+    <span class="comment"># Navigate</span><br>
+    Firewall → Rules → WAN<br><br>
+
+    <span class="comment"># Add rule</span><br>
+    Action: Pass<br>
+    Protocol: UDP<br>
+    Port: 51820<br>
+    Source: Any<br>
+    Destination: WAN Address
+  </div>
+
+  <!-- WG FIREWALL -->
+  <h2 id="wgfirewall" class="section-title">Allow VPN Traffic</h2>
+  <div class="code-box">
+    <span class="comment"># Navigate</span><br>
+    Firewall → Rules → WG<br><br>
+
+    <span class="comment"># Allow all traffic from VPN</span><br>
+    Action: Pass<br>
+    Source: WG net<br>
+    Destination: Any
+  </div>
+
+  <!-- NAT -->
+  <h2 id="nat" class="section-title">Configure NAT (Internet Access)</h2>
+  <div class="code-box">
+    <span class="comment"># Navigate</span><br>
+    Firewall → NAT → Outbound<br><br>
+
+    <span class="comment"># Switch mode</span><br>
+    Hybrid Outbound NAT<br><br>
+
+    <span class="comment"># Add rule</span><br>
+    Interface: WAN<br>
+    Source: 10.10.0.0/24<br>
+    Translation: Interface address
+  </div>
+
+  <!-- CLIENT -->
+  <h2 id="client" class="section-title">Client Configuration</h2>
+  <div class="code-box">
+    <span class="comment"># Example client config (phone/PC)</span><br><br>
+
+    [Interface]<br>
+    PrivateKey = CLIENT_PRIVATE_KEY<br>
+    Address = 10.10.0.2/24<br>
+    DNS = 1.1.1.1<br><br>
+
+    [Peer]<br>
+    PublicKey = SERVER_PUBLIC_KEY<br>
+    Endpoint = YOUR_PUBLIC_IP:51820<br>
+    AllowedIPs = 0.0.0.0/0<br>
+    PersistentKeepalive = 25
+  </div>
+
+  <!-- START -->
+  <h2 id="start" class="section-title">Enable WireGuard</h2>
+  <div class="code-box">
+    <span class="comment"># Navigate</span><br>
+    VPN → WireGuard → Settings<br><br>
+
+    <span class="comment"># Enable service</span><br>
+    Enable WireGuard ✔<br><br>
+
+    <span class="comment"># Save and apply</span><br>
+    Save
+  </div>
+
+  <!-- TEST -->
+  <h2 id="test" class="section-title">Test VPN Connection</h2>
+  <div class="code-box">
+    <span class="comment"># From client</span><br>
+    ping 10.10.0.1<br><br>
+
+    <span class="comment"># Test internet</span><br>
+    open browser → google.com
+  </div>
+
+  <!-- ISSUES -->
+  <h2 id="issues" class="section-title">Common Issues</h2>
+  <div class="code-box">
+    <span class="comment"># No handshake</span><br>
+    Check WAN port 51820 open<br><br>
+
+    <span class="comment"># Connected but no internet</span><br>
+    Check NAT rule<br><br>
+
+    <span class="comment"># Can't access LAN</span><br>
+    Add firewall rule:<br>
+    WG net → LAN net<br><br>
+
+    <span class="comment"># Behind ISP router</span><br>
+    Forward UDP 51820 to pfSense
+  </div>
+
+</div>
+</body>
+</html>
