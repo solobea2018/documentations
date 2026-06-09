@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Java JAR Deployment Guide (Ubuntu Server)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>Development</h2>
+  <a href="#intellij">Build JAR (IntelliJ)</a>
+
+  <h2>Server Setup</h2>
+  <a href="#update">Update Server</a>
+  <a href="#java">Install Java</a>
+
+  <h2>Application</h2>
+  <a href="#upload">Upload JAR</a>
+  <a href="#run">Test Run</a>
+
+  <h2>Database</h2>
+  <a href="#mysql">Install MySQL</a>
+  <a href="#dbcreate">Create Database</a>
+
+  <h2>Service</h2>
+  <a href="#service">Create Service</a>
+  <a href="#start">Start Service</a>
+
+  <h2>Web Server</h2>
+  <a href="#apache">Apache Setup</a>
+  <a href="#proxy">Reverse Proxy</a>
+
+  <h2>Alternative</h2>
+  <a href="#nginx">Why Nginx?</a>
+
+  <h2>Firewall</h2>
+  <a href="#ufw">Firewall Setup</a>
+
+  <h2>Troubleshooting</h2>
+  <a href="#logs">Logs</a>
+</div>
+
+<div class="main">
+
+  <h1 style="color:#003399;">Full Java JAR Deployment Guide</h1>
+
+  <!-- INTELLIJ -->
+  <h2 id="intellij" class="section-title">Build JAR from IntelliJ</h2>
+  <p>Package your application into a runnable .jar file.</p>
+
+  <div class="code-box">
+    <span class="comment"># Step 1: Open project in IntelliJ IDEA</span><br>
+    <span class="comment"># Step 2: Go to File → Project Structure → Artifacts</span><br>
+    <span class="comment"># Step 3: Click "+" → JAR → From modules with dependencies</span><br><br>
+
+    <span class="comment"># Select main class (your SpringBoot main or main method)</span><br>
+    <span class="comment"># Choose "Extract to target JAR"</span><br><br>
+
+    <span class="comment"># Step 4: Build JAR</span><br>
+    Build → Build Artifacts → Build<br><br>
+
+    <span class="comment"># Output location</span><br>
+    out/artifacts/yourapp.jar
+  </div>
+
+  <!-- UPDATE -->
+  <h2 id="update" class="section-title">Update Server</h2>
+  <div class="code-box">
+    <span class="comment"># Update package list</span><br>
+    sudo apt update<br><br>
+
+    <span class="comment"># Upgrade system</span><br>
+    sudo apt upgrade -y
+  </div>
+
+  <!-- JAVA -->
+  <h2 id="java" class="section-title">Install Java (OpenJDK)</h2>
+  <div class="code-box">
+    <span class="comment"># Install Java (recommended version 17)</span><br>
+    sudo apt install openjdk-17-jdk -y<br><br>
+
+    <span class="comment"># Verify installation</span><br>
+    java -version<br><br>
+
+    <span class="comment"># Check Java path</span><br>
+    which java
+  </div>
+
+  <!-- UPLOAD -->
+  <h2 id="upload" class="section-title">Upload Your JAR</h2>
+  <div class="code-box">
+    <span class="comment"># Copy JAR to server</span><br>
+    scp yourapp.jar user@server:/home/user/app/<br><br>
+
+    <span class="comment"># Move into directory</span><br>
+    cd /home/user/app
+  </div>
+
+  <!-- RUN -->
+  <h2 id="run" class="section-title">Test Run Application</h2>
+  <div class="code-box">
+    <span class="comment"># Run app normally</span><br>
+    java -jar yourapp.jar<br><br>
+
+    <span class="comment"># Run on custom port</span><br>
+    java -jar yourapp.jar --server.port=8080
+  </div>
+
+  <!-- MYSQL -->
+  <h2 id="mysql" class="section-title">Install MySQL</h2>
+  <div class="code-box">
+    <span class="comment"># Install MySQL server</span><br>
+    sudo apt install mysql-server -y<br><br>
+
+    <span class="comment"># Secure installation</span><br>
+    sudo mysql_secure_installation
+  </div>
+
+  <!-- DATABASE -->
+  <h2 id="dbcreate" class="section-title">Create Database</h2>
+  <div class="code-box">
+    <span class="comment"># Open MySQL</span><br>
+    sudo mysql<br><br>
+
+    <span class="comment"># Create database</span><br>
+    CREATE DATABASE myapp;<br><br>
+
+    <span class="comment"># Create user</span><br>
+    CREATE USER 'myuser'@'localhost' IDENTIFIED BY 'StrongPassword';<br><br>
+
+    <span class="comment"># Grant privileges</span><br>
+    GRANT ALL PRIVILEGES ON myapp.* TO 'myuser'@'localhost';<br><br>
+
+    <span class="comment"># Apply changes</span><br>
+    FLUSH PRIVILEGES;<br>
+    EXIT;
+  </div>
+
+  <!-- SERVICE -->
+  <h2 id="service" class="section-title">Create Systemd Service</h2>
+  <div class="code-box">
+    <span class="comment"># Create service file</span><br>
+    sudo nano /etc/systemd/system/myapp.service<br><br>
+
+    [Unit]<br>
+    Description=Java App<br>
+    After=network.target<br><br>
+
+    [Service]<br>
+    User=ubuntu<br>
+    WorkingDirectory=/home/ubuntu/app<br>
+    ExecStart=/usr/bin/java -jar /home/ubuntu/app/yourapp.jar<br>
+    Restart=always<br>
+    RestartSec=5<br><br>
+
+    [Install]<br>
+    WantedBy=multi-user.target
+  </div>
+
+  <!-- START -->
+  <h2 id="start" class="section-title">Start Service</h2>
+  <div class="code-box">
+    <span class="comment"># Reload systemd</span><br>
+    sudo systemctl daemon-reload<br><br>
+
+    <span class="comment"># Enable service on boot</span><br>
+    sudo systemctl enable myapp<br><br>
+
+    <span class="comment"># Start service</span><br>
+    sudo systemctl start myapp<br><br>
+
+    <span class="comment"># Check status</span><br>
+    sudo systemctl status myapp
+  </div>
+
+  <!-- APACHE -->
+  <h2 id="apache" class="section-title">Install Apache</h2>
+  <div class="code-box">
+    <span class="comment"># Install Apache</span><br>
+    sudo apt install apache2 -y<br><br>
+
+    <span class="comment"># Enable proxy modules</span><br>
+    sudo a2enmod proxy<br>
+    sudo a2enmod proxy_http<br>
+    sudo a2enmod rewrite
+  </div>
+
+  <!-- PROXY -->
+  <h2 id="proxy" class="section-title">Reverse Proxy (Port 80 → 8080)</h2>
+  <div class="code-box">
+    <span class="comment"># Create virtual host</span><br>
+    sudo nano /etc/apache2/sites-available/myapp.conf<br><br>
+
+    &lt;VirtualHost *:80&gt;<br>
+    ServerName yourdomain.com<br><br>
+
+    <span class="comment"># Forward traffic to Java app</span><br>
+    ProxyPass / http://localhost:8080/<br>
+    ProxyPassReverse / http://localhost:8080/<br><br>
+
+    &lt;/VirtualHost&gt;
+  </div>
+
+  <div class="code-box">
+    <span class="comment"># Enable site</span><br>
+    sudo a2ensite myapp.conf<br><br>
+
+    <span class="comment"># Restart Apache</span><br>
+    sudo systemctl restart apache2
+  </div>
+
+  <!-- NGINX -->
+  <h2 id="nginx" class="section-title">Why Use Nginx Instead?</h2>
+  <p>
+    :contentReference[oaicite:4]{index=4} is often preferred over
+    :contentReference[oaicite:5]{index=5} because:
+  </p>
+
+  <ul>
+    <li>Better performance under high traffic</li>
+    <li>Handles many concurrent connections efficiently</li>
+    <li>Lower memory usage</li>
+    <li>Very fast as reverse proxy</li>
+  </ul>
+
+  <p>Apache is easier for beginners, but Nginx is better for scaling.</p>
+
+  <!-- FIREWALL -->
+  <h2 id="ufw" class="section-title">Firewall Setup</h2>
+  <div class="code-box">
+    <span class="comment"># Allow SSH</span><br>
+    sudo ufw allow 22<br><br>
+
+    <span class="comment"># Allow HTTP/HTTPS</span><br>
+    sudo ufw allow 80<br>
+    sudo ufw allow 443<br><br>
+
+    <span class="comment"># Enable firewall</span><br>
+    sudo ufw enable
+  </div>
+
+  <!-- LOGS -->
+  <h2 id="logs" class="section-title">Check Logs</h2>
+  <div class="code-box">
+    <span class="comment"># App logs</span><br>
+    journalctl -u myapp -f<br><br>
+
+    <span class="comment"># Apache logs</span><br>
+    tail -f /var/log/apache2/error.log<br><br>
+
+    <span class="comment"># MySQL logs</span><br>
+    tail -f /var/log/mysql/error.log
+  </div>
+
+</div>
+</body>
+</html>

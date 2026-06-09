@@ -182,6 +182,139 @@
     sudo tail -f /var/log/samba/log.nmbd
   </div>
 
+  <h2 id="no-guest" class="section-title">Disable Guest Access (Force Login)</h2>
+  <div class="code-box">
+    <span class="comment"># Edit Samba config</span><br>
+    sudo nano /etc/samba/smb.conf<br><br>
+
+    <span class="comment"># Global settings</span><br>
+    [global]<br>
+    security = user<br>
+    map to guest = never<br><br>
+
+    <span class="comment"># Share settings</span><br>
+    [Shared]<br>
+    guest ok = no<br>
+    public = no<br><br>
+
+    <span class="comment"># Restart Samba</span><br>
+    sudo systemctl restart smbd
+  </div>
+  <h2 id="hosts-allow" class="section-title">Restrict Access by IP</h2>
+  <div class="code-box">
+    <span class="comment"># Allow only local network</span><br>
+    [global]<br>
+    hosts allow = 192.168.1. 127.0.0.1<br>
+    hosts deny = 0.0.0.0/0<br><br>
+
+    <span class="comment"># Restart Samba</span><br>
+    sudo systemctl restart smbd
+  </div>
+  <h2 id="interfaces" class="section-title">Bind Samba to Specific Interfaces</h2>
+  <div class="code-box">
+    [global]<br>
+    interfaces = lo eth0<br>
+    bind interfaces only = yes<br><br>
+
+    <span class="comment"># Prevents exposure on unintended networks</span>
+  </div>
+  <h2 id="disable-smb1" class="section-title">Disable SMB1 Protocol</h2>
+  <div class="code-box">
+    [global]<br>
+    min protocol = SMB2<br><br>
+
+    <span class="comment"># SMB1 is insecure and should never be used</span>
+  </div>
+  <h2 id="groups" class="section-title">Use Samba Groups</h2>
+  <div class="code-box">
+    <span class="comment"># Create group</span><br>
+    sudo groupadd sambashare<br><br>
+
+    <span class="comment"># Add user to group</span><br>
+    sudo usermod -aG sambashare myuser<br><br>
+
+    <span class="comment"># Update folder ownership</span><br>
+    sudo chown -R root:sambashare /srv/samba/share<br>
+    sudo chmod -R 770 /srv/samba/share<br><br>
+
+    <span class="comment"># Restrict in smb.conf</span><br>
+    valid users = @sambashare
+  </div>
+  <h2 id="strict-firewall" class="section-title">Strict Firewall Rules</h2>
+  <div class="code-box">
+    <span class="comment"># Allow only LAN access</span><br>
+    sudo ufw allow from 192.168.1.0/24 to any port 445<br><br>
+
+    <span class="comment"># Deny all other access</span><br>
+    sudo ufw deny 445<br><br>
+
+    <span class="comment"># Reload firewall</span><br>
+    sudo ufw reload
+  </div>
+  <h2 id="fail2ban" class="section-title">Protect Samba with Fail2Ban</h2>
+  <div class="code-box">
+    <span class="comment"># Install Fail2Ban</span><br>
+    sudo apt install fail2ban -y<br><br>
+
+    <span class="comment"># Create Samba jail config</span><br>
+    sudo nano /etc/fail2ban/jail.local<br><br>
+
+    [samba]<br>
+    enabled = true<br>
+    port = 445<br>
+    filter = samba<br>
+    logpath = /var/log/samba/log.smbd<br>
+    maxretry = 5<br><br>
+
+    <span class="comment"># Restart service</span><br>
+    sudo systemctl restart fail2ban
+  </div>
+  <h2 id="logging" class="section-title">Enable Samba Logging</h2>
+  <div class="code-box">
+    [global]<br>
+    log file = /var/log/samba/log.%m<br>
+    max log size = 1000<br>
+    logging = file<br><br>
+
+    <span class="comment"># Monitor logs</span><br>
+    sudo tail -f /var/log/samba/log.smbd
+  </div>
+  <h2 id="credentials" class="section-title">Clear Cached Credentials</h2>
+  <div class="code-box">
+    <span class="comment"># On Windows:</span><br>
+    Control Panel → Credential Manager → Remove saved credentials<br><br>
+
+    <span class="comment"># On Linux (example):</span><br>
+    rm -rf ~/.cache/samba<br><br>
+
+    <span class="comment"># Then reconnect to share</span>
+  </div>
+  <h2 id="hidden-share" class="section-title">Hide Share from Network Browsing</h2>
+  <div class="code-box">
+    [Shared]<br>
+    browseable = no<br><br>
+
+    <span class="comment"># Users must manually enter path</span><br>
+    \\192.168.1.20\Shared
+  </div>
+  <h2 id="best-practice" class="section-title">Recommended Secure Setup</h2>
+  <div class="code-box">
+    <span class="comment"># Minimum secure config</span><br>
+    guest ok = no<br>
+    map to guest = never<br>
+    min protocol = SMB2<br>
+    valid users = @sambashare<br><br>
+
+    <span class="comment"># Network security</span><br>
+    Allow only LAN (UFW + hosts allow)<br><br>
+
+    <span class="comment"># Access method</span><br>
+    Use VPN (WireGuard) for remote access<br><br>
+
+    <span class="comment"># Never do this</span><br>
+    DO NOT open port 445 to the internet
+  </div>
+
 </div>
 </body>
 </html>
