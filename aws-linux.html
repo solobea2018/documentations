@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AWS CLI Documentation for Linux</title>
+    <link rel="stylesheet" href="styles1.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <h2>Installation</h2>
+    <a href="#requirements">Requirements</a>
+    <a href="#install">Install AWS CLI</a>
+    <a href="#verify">Verify Installation</a>
+
+    <h2>Configuration</h2>
+    <a href="#iam-user">Create IAM User</a>
+    <a href="#configure">Configure AWS CLI</a>
+    <a href="#test-config">Test Configuration</a>
+
+    <h2>Identity</h2>
+    <a href="#identity">Who Am I?</a>
+    <a href="#regions">List Regions</a>
+
+    <h2>S3 Commands</h2>
+    <a href="#s3-list">List Buckets</a>
+    <a href="#s3-create">Create Bucket</a>
+    <a href="#s3-upload">Upload Files</a>
+    <a href="#s3-download">Download Files</a>
+    <a href="#s3-sync">Sync Directories</a>
+    <a href="#s3-delete">Delete Objects</a>
+
+    <h2>EC2 Commands</h2>
+    <a href="#ec2-list">List Instances</a>
+    <a href="#ec2-start">Start Instance</a>
+    <a href="#ec2-stop">Stop Instance</a>
+    <a href="#ec2-reboot">Reboot Instance</a>
+    <a href="#ec2-terminate">Terminate Instance</a>
+
+    <h2>IAM Roles</h2>
+    <a href="#ec2-role">Attach IAM Role</a>
+    <a href="#role-test">Test IAM Role</a>
+
+    <h2>Troubleshooting</h2>
+    <a href="#errors">Common Errors</a>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <h1 style="color:#003399;">AWS CLI Documentation (Linux)</h1>
+
+    <!-- REQUIREMENTS -->
+    <h2 id="requirements" class="section-title">Requirements</h2>
+
+    <div class="code-box">
+        AWS Account
+
+        Linux Server/Desktop
+
+        IAM User or IAM Role
+
+        Internet Connection
+
+        Terminal Access
+    </div>
+
+    <!-- INSTALL -->
+    <h2 id="install" class="section-title">Install AWS CLI</h2>
+
+    <div class="code-box">
+        <span class="comment"># Download installer</span>
+
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+        <span class="comment"># Extract</span>
+
+        unzip awscliv2.zip
+
+        <span class="comment"># Install</span>
+
+        sudo ./aws/install
+    </div>
+
+    <!-- VERIFY -->
+    <h2 id="verify" class="section-title">Verify Installation</h2>
+
+    <div class="code-box">
+        aws --version
+    </div>
+
+    <div class="code-box">
+        aws-cli/2.x.x Python/3.x Linux
+    </div>
+
+    <!-- IAM USER -->
+    <h2 id="iam-user" class="section-title">Create IAM User</h2>
+
+    <div class="code-box">
+        AWS Console
+
+        IAM
+
+        Users
+
+        Create User
+
+        Attach Permissions:
+
+        AmazonS3FullAccess
+        AmazonEC2FullAccess
+
+        Create Access Key
+
+        Download credentials
+    </div>
+
+    <!-- CONFIGURE -->
+    <h2 id="configure" class="section-title">Configure AWS CLI</h2>
+
+    <div class="code-box">
+        aws configure
+    </div>
+
+    <div class="code-box">
+        AWS Access Key ID [None]:
+        AKIA****************
+
+        AWS Secret Access Key [None]:
+        *****************************
+
+        Default region name:
+        us-east-1
+
+        Default output format:
+        json
+    </div>
+
+    <!-- TEST -->
+    <h2 id="test-config" class="section-title">Test Configuration</h2>
+
+    <div class="code-box">
+        aws sts get-caller-identity
+    </div>
+
+    <!-- IDENTITY -->
+    <h2 id="identity" class="section-title">Who Am I?</h2>
+
+    <div class="code-box">
+        aws sts get-caller-identity
+    </div>
+
+    <div class="code-box">
+        {
+        "UserId": "...",
+        "Account": "...",
+        "Arn": "..."
+        }
+    </div>
+
+    <!-- REGIONS -->
+    <h2 id="regions" class="section-title">List AWS Regions</h2>
+
+    <div class="code-box">
+        aws ec2 describe-regions
+    </div>
+
+    <!-- S3 LIST -->
+    <h2 id="s3-list" class="section-title">List Buckets</h2>
+
+    <div class="code-box">
+        aws s3 ls
+    </div>
+
+    <!-- S3 CREATE -->
+    <h2 id="s3-create" class="section-title">Create Bucket</h2>
+
+    <div class="code-box">
+        aws s3 mb s3://my-company-bucket
+    </div>
+
+    <!-- S3 UPLOAD -->
+    <h2 id="s3-upload" class="section-title">Upload File</h2>
+
+    <div class="code-box">
+        aws s3 cp report.pdf s3://my-company-bucket/
+    </div>
+
+    <!-- S3 DOWNLOAD -->
+    <h2 id="s3-download" class="section-title">Download File</h2>
+
+    <div class="code-box">
+        aws s3 cp s3://my-company-bucket/report.pdf .
+    </div>
+
+    <!-- S3 SYNC -->
+    <h2 id="s3-sync" class="section-title">Sync Folder to S3</h2>
+
+    <div class="code-box">
+        aws s3 sync ./website s3://my-company-bucket
+    </div>
+
+    <div class="code-box">
+        <span class="comment"># Download entire bucket</span>
+
+        aws s3 sync s3://my-company-bucket ./backup
+    </div>
+
+    <!-- S3 DELETE -->
+    <h2 id="s3-delete" class="section-title">Delete Object</h2>
+
+    <div class="code-box">
+        aws s3 rm s3://my-company-bucket/report.pdf
+    </div>
+
+    <!-- EC2 LIST -->
+    <h2 id="ec2-list" class="section-title">List EC2 Instances</h2>
+
+    <div class="code-box">
+        aws ec2 describe-instances
+    </div>
+
+    <!-- START -->
+    <h2 id="ec2-start" class="section-title">Start Instance</h2>
+
+    <div class="code-box">
+        aws ec2 start-instances \
+        --instance-ids i-0123456789abcdef0
+    </div>
+
+    <!-- STOP -->
+    <h2 id="ec2-stop" class="section-title">Stop Instance</h2>
+
+    <div class="code-box">
+        aws ec2 stop-instances \
+        --instance-ids i-0123456789abcdef0
+    </div>
+
+    <!-- REBOOT -->
+    <h2 id="ec2-reboot" class="section-title">Reboot Instance</h2>
+
+    <div class="code-box">
+        aws ec2 reboot-instances \
+        --instance-ids i-0123456789abcdef0
+    </div>
+
+    <!-- TERMINATE -->
+    <h2 id="ec2-terminate" class="section-title">Terminate Instance</h2>
+
+    <div class="code-box">
+        aws ec2 terminate-instances \
+        --instance-ids i-0123456789abcdef0
+    </div>
+
+    <!-- IAM ROLE -->
+    <h2 id="ec2-role" class="section-title">Connect EC2 Using IAM Role (Recommended)</h2>
+
+    <div class="code-box">
+        <span class="comment"># Create IAM Role</span>
+
+        IAM
+
+        Roles
+
+        Create Role
+
+        Trusted Entity:
+        AWS Service
+
+        Use Case:
+        EC2
+
+        Attach Policies:
+
+        AmazonS3FullAccess
+        AmazonEC2ReadOnlyAccess
+    </div>
+
+    <div class="code-box">
+        <span class="comment"># Attach role to instance</span>
+
+        EC2
+
+        Instances
+
+        Actions
+
+        Security
+
+        Modify IAM Role
+    </div>
+
+    <div class="code-box">
+        <span class="comment"># No access keys required</span>
+
+        aws s3 ls
+
+        aws ec2 describe-instances
+    </div>
+
+    <!-- TEST ROLE -->
+    <h2 id="role-test" class="section-title">Verify EC2 IAM Role</h2>
+
+    <div class="code-box">
+        aws sts get-caller-identity
+    </div>
+
+    <div class="code-box">
+        The ARN should show:
+
+        assumed-role/MyEC2Role/instance-id
+    </div>
+
+    <!-- COMMON COMMANDS -->
+    <h2 class="section-title">Useful Commands</h2>
+
+    <div class="code-box">
+        aws configure list
+
+        aws sts get-caller-identity
+
+        aws s3 ls
+
+        aws ec2 describe-instances
+
+        aws ec2 describe-security-groups
+
+        aws ec2 describe-volumes
+
+        aws ec2 describe-key-pairs
+    </div>
+
+    <!-- ERRORS -->
+    <h2 id="errors" class="section-title">Common Errors</h2>
+
+    <div class="code-box">
+        Unable to locate credentials
+
+        Cause:
+        AWS CLI not configured
+
+        Fix:
+        aws configure
+    </div>
+
+    <div class="code-box">
+        AccessDenied
+
+        Cause:
+        Missing IAM permissions
+
+        Fix:
+        Attach correct IAM policy
+    </div>
+
+    <div class="code-box">
+        ExpiredToken
+
+        Cause:
+        Temporary credentials expired
+
+        Fix:
+        Re-login or refresh role credentials
+    </div>
+
+    <div class="code-box">
+        InvalidAccessKeyId
+
+        Cause:
+        Wrong Access Key
+
+        Fix:
+        Recreate key and run:
+
+        aws configure
+    </div>
+
+    <!-- BEST PRACTICES -->
+    <h2 class="section-title">Best Practices</h2>
+
+    <div class="code-box">
+        ✓ Use IAM Roles on EC2
+
+        ✓ Avoid hardcoding Access Keys
+
+        ✓ Use least privilege permissions
+
+        ✓ Enable MFA
+
+        ✓ Rotate credentials regularly
+
+        ✓ Use S3 versioning for backups
+
+        ✓ Restrict public bucket access
+    </div>
+
+</div>
+
+</body>
+</html>
