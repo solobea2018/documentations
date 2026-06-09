@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>System Administrator Full Documentation</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles1.css">
 
 </head>
 
@@ -234,6 +234,11 @@
     sudo chmod -R 775 /var/www/html<br>
     <span class="comment">View user dir</span><br>
     getent passwd ftp-user<br>
+
+    <span class="comment">View user groups</span><br>
+    groups ftp-user<br>
+
+    grep username /etc/group<br>
 
     <span class="comment"># Change user shell</span><br>
     sudo chsh -s /bin/bash johndoe<br><br>

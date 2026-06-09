@@ -1,0 +1,298 @@
+/* =========================
+   GLOBAL
+========================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.7;
+    color: #222;
+    background: #f5f7fa;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 100vh;
+    overflow-y: auto;
+
+    background: #1f2937;
+    color: #e5e7eb;
+
+    padding: 25px;
+    border-right: 1px solid #374151;
+}
+
+.sidebar h1,
+.sidebar h2,
+.sidebar h3 {
+    color: #60a5fa;
+    margin-top: 1.2rem;
+    margin-bottom: 0.7rem;
+}
+
+.sidebar a {
+    display: block;
+    color: #d1d5db;
+    text-decoration: none;
+    padding: 6px 0;
+    transition: 0.2s;
+    word-break: break-word;
+}
+
+.sidebar a:hover {
+    color: #60a5fa;
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+.main {
+    margin-left: 300px;
+    padding: 40px;
+}
+
+.content {
+    max-width: 1000px;
+}
+
+/* =========================
+   HEADINGS
+========================= */
+
+h1 {
+    font-size: 2.2rem;
+    color: #0f172a;
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 1.8rem;
+    color: #1e40af;
+    margin-top: 2rem;
+}
+
+h3 {
+    font-size: 1.4rem;
+    color: #1d4ed8;
+}
+
+.section-title {
+    color: #1e40af;
+    border-bottom: 2px solid #dbeafe;
+    padding-bottom: 8px;
+    margin-top: 2rem;
+}
+
+/* =========================
+   TEXT
+========================= */
+
+p,
+li {
+    font-size: 16px;
+}
+
+ul,
+ol {
+    padding-left: 25px;
+}
+
+/* =========================
+   TABLES
+========================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: white;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background: #f3f4f6;
+}
+
+/* =========================
+   IMAGES
+========================= */
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* =========================
+   CODE BLOCKS
+========================= */
+
+.code-box,
+pre {
+    background: #1e1e1e;
+    color: #dcdcdc;
+
+    padding: 16px;
+    margin: 20px 0;
+
+    border-radius: 8px;
+    border: 1px solid #333;
+
+    font-family: Consolas, Monaco, monospace;
+    font-size: 14px;
+    line-height: 1.5;
+
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Syntax colors */
+
+.comment {
+    color: #6a9955;
+}
+
+.cmd {
+    color: #9cdcfe;
+}
+
+.str {
+    color: #ce9178;
+}
+
+.key {
+    color: #c586c0;
+}
+
+/* Inline code */
+
+code {
+    background: #eef2ff;
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-size: 0.95em;
+}
+
+/* =========================
+   LINKS
+========================= */
+
+a {
+    color: #2563eb;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid #374151;
+    }
+
+    .main {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .code-box,
+    pre {
+        font-size: 13px;
+    }
+}
+
+/* =========================
+   PRINT
+========================= */
+
+@media print {
+
+    @page {
+        margin: 1.5cm;
+    }
+
+    body {
+        background: white !important;
+        color: black !important;
+        font-size: 12pt;
+    }
+
+    .sidebar {
+        display: none !important;
+    }
+
+    .main {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    a {
+        color: black !important;
+        text-decoration: none;
+    }
+
+    img,
+    table,
+    pre,
+    .code-box {
+        page-break-inside: avoid;
+    }
+
+    h1,
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+
+    .code-box,
+    pre {
+        background: #f5f5f5 !important;
+        color: #000 !important;
+        border: 1px solid #ccc;
+    }
+}
