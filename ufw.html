@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UFW Documentation for Linux</title>
+    <link rel="stylesheet" href="styles1.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <h2>Installation</h2>
+    <a href="#requirements">Requirements</a>
+    <a href="#install">Install UFW</a>
+    <a href="#verify">Verify Installation</a>
+
+    <h2>Firewall Basics</h2>
+    <a href="#status">Check Status</a>
+    <a href="#enable">Enable UFW</a>
+    <a href="#disable">Disable UFW</a>
+    <a href="#reload">Reload Rules</a>
+    <a href="#reset">Reset UFW</a>
+
+    <h2>Default Policies</h2>
+    <a href="#default-deny">Default Deny Incoming</a>
+    <a href="#default-allow">Default Allow Outgoing</a>
+
+    <h2>Allow Rules</h2>
+    <a href="#allow-port">Allow Port</a>
+    <a href="#allow-service">Allow Service</a>
+    <a href="#allow-range">Allow Port Range</a>
+    <a href="#allow-ip">Allow IP Address</a>
+    <a href="#allow-subnet">Allow Subnet</a>
+
+    <h2>Deny Rules</h2>
+    <a href="#deny-port">Deny Port</a>
+    <a href="#reject-port">Reject Port</a>
+
+    <h2>Insert Rules</h2>
+    <a href="#insert-rule">Insert Rule Position</a>
+
+    <h2>Delete Rules</h2>
+    <a href="#delete-rule">Delete Rule</a>
+    <a href="#delete-number">Delete By Number</a>
+
+    <h2>Protocols</h2>
+    <a href="#tcp">TCP Rules</a>
+    <a href="#udp">UDP Rules</a>
+
+    <h2>SSH Protection</h2>
+    <a href="#ssh">Allow SSH</a>
+    <a href="#ssh-ip">SSH From Specific IP</a>
+
+    <h2>Application Profiles</h2>
+    <a href="#apps">List Applications</a>
+    <a href="#apache">Apache Profile</a>
+
+    <h2>Advanced Rules</h2>
+    <a href="#in-interface">Interface Rules</a>
+    <a href="#forward">Forwarding</a>
+    <a href="#route">Route Rules</a>
+
+    <h2>Logging</h2>
+    <a href="#logging">Enable Logging</a>
+
+    <h2>IPv6</h2>
+    <a href="#ipv6">IPv6 Support</a>
+
+    <h2>Troubleshooting</h2>
+    <a href="#errors">Common Errors</a>
+
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <h1 style="color:#003399;">UFW Documentation (Linux)</h1>
+
+    <!-- REQUIREMENTS -->
+    <h2 id="requirements" class="section-title">Requirements</h2>
+
+    <div class="code-box">
+
+        Linux Server/Desktop
+
+        Ubuntu/Debian
+
+        Root or sudo privileges
+
+        Terminal Access
+
+    </div>
+
+    <!-- INSTALL -->
+    <h2 id="install" class="section-title">Install UFW</h2>
+
+    <div class="code-box">
+
+        sudo apt update
+
+        sudo apt install ufw
+
+    </div>
+
+    <!-- VERIFY -->
+    <h2 id="verify" class="section-title">Verify Installation</h2>
+
+    <div class="code-box">
+
+        ufw --version
+
+    </div>
+
+    <!-- STATUS -->
+    <h2 id="status" class="section-title">Check Firewall Status</h2>
+
+    <div class="code-box">
+
+        sudo ufw status
+
+    </div>
+
+    <div class="code-box">
+
+        sudo ufw status verbose
+
+    </div>
+
+    <div class="code-box">
+
+        sudo ufw status numbered
+
+    </div>
+
+    <!-- ENABLE -->
+    <h2 id="enable" class="section-title">Enable UFW</h2>
+
+    <div class="code-box">
+
+        sudo ufw enable
+
+    </div>
+
+    <!-- DISABLE -->
+    <h2 id="disable" class="section-title">Disable UFW</h2>
+
+    <div class="code-box">
+
+        sudo ufw disable
+
+    </div>
+
+    <!-- RELOAD -->
+    <h2 id="reload" class="section-title">Reload Rules</h2>
+
+    <div class="code-box">
+
+        sudo ufw reload
+
+    </div>
+
+    <!-- RESET -->
+    <h2 id="reset" class="section-title">Reset UFW</h2>
+
+    <div class="code-box">
+
+        sudo ufw reset
+
+    </div>
+
+    <!-- DEFAULT POLICY -->
+    <h2 id="default-deny" class="section-title">Default Deny Incoming</h2>
+
+    <div class="code-box">
+
+        sudo ufw default deny incoming
+
+    </div>
+
+    <h2 id="default-allow" class="section-title">Default Allow Outgoing</h2>
+
+    <div class="code-box">
+
+        sudo ufw default allow outgoing
+
+    </div>
+
+    <!-- ALLOW -->
+    <h2 id="allow-port" class="section-title">Allow Port</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow 80
+
+        sudo ufw allow 443
+
+    </div>
+
+    <h2 id="allow-service" class="section-title">Allow Service</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow ssh
+
+        sudo ufw allow http
+
+        sudo ufw allow https
+
+    </div>
+
+    <h2 id="allow-range" class="section-title">Allow Port Range</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow 6000:7000/tcp
+
+    </div>
+
+    <h2 id="allow-ip" class="section-title">Allow Specific IP</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow from 192.168.1.100
+
+    </div>
+
+    <h2 id="allow-subnet" class="section-title">Allow Entire Subnet</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow from 192.168.1.0/24
+
+    </div>
+
+    <!-- DENY -->
+    <h2 id="deny-port" class="section-title">Deny Port</h2>
+
+    <div class="code-box">
+
+        sudo ufw deny 3306
+
+    </div>
+
+    <h2 id="reject-port" class="section-title">Reject Port</h2>
+
+    <div class="code-box">
+
+        sudo ufw reject 25
+
+    </div>
+
+    <!-- INSERT -->
+    <h2 id="insert-rule" class="section-title">Insert Rule at Position</h2>
+
+    <div class="code-box">
+
+        sudo ufw insert 1 allow 22
+
+        sudo ufw insert 2 deny 3306
+
+    </div>
+
+    <!-- DELETE -->
+    <h2 id="delete-rule" class="section-title">Delete Rule</h2>
+
+    <div class="code-box">
+
+        sudo ufw delete allow 80
+
+        sudo ufw delete deny 3306
+
+    </div>
+
+    <h2 id="delete-number" class="section-title">Delete Rule By Number</h2>
+
+    <div class="code-box">
+
+        sudo ufw status numbered
+
+        sudo ufw delete 3
+
+    </div>
+
+    <!-- TCP -->
+    <h2 id="tcp" class="section-title">TCP Rules</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow 22/tcp
+
+        sudo ufw allow 443/tcp
+
+    </div>
+
+    <!-- UDP -->
+    <h2 id="udp" class="section-title">UDP Rules</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow 53/udp
+
+        sudo ufw allow 1194/udp
+
+    </div>
+
+    <!-- SSH -->
+    <h2 id="ssh" class="section-title">Allow SSH</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow ssh
+
+        sudo ufw allow 22/tcp
+
+    </div>
+
+    <h2 id="ssh-ip" class="section-title">Allow SSH From Specific IP</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow from 192.168.1.50 to any port 22
+
+    </div>
+
+    <!-- APPS -->
+    <h2 id="apps" class="section-title">List Application Profiles</h2>
+
+    <div class="code-box">
+
+        sudo ufw app list
+
+    </div>
+
+    <h2 id="apache" class="section-title">Apache Profile</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow "Apache"
+
+        sudo ufw allow "Apache Full"
+
+    </div>
+
+    <!-- ADVANCED -->
+    <h2 id="in-interface" class="section-title">Allow On Interface</h2>
+
+    <div class="code-box">
+
+        sudo ufw allow in on eth0 to any port 80
+
+    </div>
+
+    <h2 id="forward" class="section-title">Allow Forwarding</h2>
+
+    <div class="code-box">
+
+        sudo ufw route allow in on eth0 out on eth1
+
+    </div>
+
+    <h2 id="route" class="section-title">Route Rule</h2>
+
+    <div class="code-box">
+
+        sudo ufw route allow proto tcp from any to any port 80
+
+    </div>
+
+    <!-- LOGGING -->
+    <h2 id="logging" class="section-title">Enable Logging</h2>
+
+    <div class="code-box">
+
+        sudo ufw logging on
+
+        sudo ufw logging low
+
+        sudo ufw logging medium
+
+        sudo ufw logging high
+
+    </div>
+
+    <!-- IPV6 -->
+    <h2 id="ipv6" class="section-title">Enable IPv6</h2>
+
+    <div class="code-box">
+
+        sudo nano /etc/default/ufw
+
+        IPV6=yes
+
+        sudo ufw reload
+
+    </div>
+
+    <!-- USEFUL COMMANDS -->
+    <h2 class="section-title">Useful Commands</h2>
+
+    <div class="code-box">
+
+        sudo ufw status
+
+        sudo ufw status numbered
+
+        sudo ufw show added
+
+        sudo ufw show listening
+
+        sudo ufw show raw
+
+        sudo ufw show before-rules
+
+        sudo ufw show user-rules
+
+    </div>
+
+    <!-- ERRORS -->
+    <h2 id="errors" class="section-title">Common Errors</h2>
+
+    <div class="code-box">
+
+        ERROR:
+        Could not find a profile matching
+
+        Cause:
+        Wrong application name
+
+        Fix:
+        sudo ufw app list
+
+    </div>
+
+    <div class="code-box">
+
+        Firewall inactive
+
+        Cause:
+        UFW disabled
+
+        Fix:
+        sudo ufw enable
+
+    </div>
+
+    <div class="code-box">
+
+        SSH connection lost
+
+        Cause:
+        Port 22 blocked
+
+        Fix:
+
+        sudo ufw allow ssh
+
+    </div>
+
+    <!-- BEST PRACTICES -->
+    <h2 class="section-title">Best Practices</h2>
+
+    <div class="code-box">
+
+        ✓ Allow SSH before enabling firewall
+
+        ✓ Use status numbered
+
+        ✓ Delete rules by number
+
+        ✓ Enable logging
+
+        ✓ Use specific IP restrictions
+
+        ✓ Keep default deny incoming
+
+        ✓ Allow only required ports
+
+        ✓ Backup rules before reset
+
+    </div>
+
+</div>
+
+</body>
+</html>
