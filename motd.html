@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Linux Custom MOTD Guide</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+  <h2>Installation</h2>
+  <a href="#figlet">Install FIGlet</a>
+
+  <h2>Configuration</h2>
+  <a href="#script">Create MOTD Script</a>
+  <a href="#permission">Make Script Executable</a>
+
+  <h2>Customization</h2>
+  <a href="#banner">Banner</a>
+  <a href="#hostname">Hostname</a>
+  <a href="#date">Date & Time</a>
+  <a href="#ip">IP Address</a>
+
+  <h2>System Information</h2>
+  <a href="#cpu">CPU Usage</a>
+  <a href="#memory">Memory</a>
+  <a href="#swap">Swap</a>
+  <a href="#disk">Disk Usage</a>
+  <a href="#uptime">Uptime</a>
+  <a href="#load">System Load</a>
+  <a href="#process">Processes</a>
+  <a href="#users">Logged Users</a>
+  <a href="#login">Last Login</a>
+
+  <h2>Testing</h2>
+  <a href="#test">Preview MOTD</a>
+
+</div>
+
+<div class="main">
+
+  <h1 style="color:#003399;">Linux Custom MOTD Guide</h1>
+
+  <!-- FIGLET -->
+  <h2 id="figlet" class="section-title">Install FIGlet</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Update package list</span><br>
+    sudo apt update<br><br>
+
+    <span class="comment"># Install figlet</span><br>
+    sudo apt install figlet -y<br><br>
+
+    <span class="comment"># Test</span><br>
+    figlet AMUCTA
+
+  </div>
+
+  <!-- SCRIPT -->
+
+  <h2 id="script" class="section-title">Create MOTD Script</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Create custom MOTD script</span><br>
+
+    sudo nano /etc/update-motd.d/99-amucta
+
+  </div>
+
+  <!-- EXECUTABLE -->
+
+  <h2 id="permission" class="section-title">Make Script Executable</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Allow execution</span><br>
+
+    sudo chmod +x /etc/update-motd.d/99-amucta
+
+  </div>
+
+  <!-- BANNER -->
+
+  <h2 id="banner" class="section-title">Display Banner</h2>
+
+  <div class="code-box">
+
+    <span class="comment">#!/bin/bash</span><br>
+
+    clear<br><br>
+
+    figlet -f slant AMUCTA<br><br>
+
+    echo "Welcome to AMUCTA Production Server"<br>
+    echo
+
+  </div>
+
+  <!-- HOSTNAME -->
+
+  <h2 id="hostname" class="section-title">Display Hostname</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Show server hostname</span><br>
+
+    echo "Hostname : $(hostname)"
+
+  </div>
+
+  <!-- DATE -->
+
+  <h2 id="date" class="section-title">Display Date & Time</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Current server time</span><br>
+
+    echo "Date : $(date)"
+
+  </div>
+
+  <!-- IP -->
+
+  <h2 id="ip" class="section-title">Display IP Address</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Primary server IP</span><br>
+
+    IP=$(hostname -I | awk '{print $1}')<br>
+
+    echo "IP Address : $IP"
+
+  </div>
+
+  <!-- CPU -->
+
+  <h2 id="cpu" class="section-title">Display CPU Usage</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># CPU utilization</span><br>
+
+    CPU=$(top -bn1 | grep "Cpu(s)" | awk '{print 100-$8"%"}')<br>
+
+    echo "CPU Usage : $CPU"
+
+  </div>
+
+  <!-- MEMORY -->
+
+  <h2 id="memory" class="section-title">Display RAM Usage</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Used / Total RAM</span><br>
+
+    RAM=$(free -h | awk '/Mem:/ {print $3 " / " $2}')<br>
+
+    echo "Memory : $RAM"
+
+  </div>
+
+  <!-- SWAP -->
+
+  <h2 id="swap" class="section-title">Display Swap Usage</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Used / Total Swap</span><br>
+
+    SWAP=$(free -h | awk '/Swap:/ {print $3 " / " $2}')<br>
+
+    echo "Swap : $SWAP"
+
+  </div>
+
+  <!-- DISK -->
+
+  <h2 id="disk" class="section-title">Display Disk Usage</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Root filesystem usage</span><br>
+
+    DISK=$(df -h / | awk 'NR==2 {print $3 " / " $2 " (" $5 ")"}')<br>
+
+    echo "Disk : $DISK"
+
+  </div>
+
+  <!-- UPTIME -->
+
+  <h2 id="uptime" class="section-title">Display System Uptime</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Server uptime</span><br>
+
+    echo "Uptime : $(uptime -p)"
+
+  </div>
+
+  <!-- LOAD -->
+
+  <h2 id="load" class="section-title">Display System Load</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Load average</span><br>
+
+    echo "Load : $(uptime | awk -F'load average:' '{print $2}')"
+
+  </div>
+
+  <!-- PROCESS -->
+
+  <h2 id="process" class="section-title">Display Running Processes</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Total running processes</span><br>
+
+    echo "Processes : $(ps -e --no-headers | wc -l)"
+
+  </div>
+
+  <!-- USERS -->
+
+  <h2 id="users" class="section-title">Display Logged-in Users</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Number of active users</span><br>
+
+    echo "Users : $(who | wc -l)"
+
+  </div>
+
+  <!-- LAST LOGIN -->
+
+  <h2 id="login" class="section-title">Display Last Login</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Previous login</span><br>
+
+    last -n 1 "$USER"
+
+  </div>
+
+  <!-- TEST -->
+
+  <h2 id="test" class="section-title">Preview the MOTD</h2>
+
+  <div class="code-box">
+
+    <span class="comment"># Test without logging out</span><br>
+
+    run-parts /etc/update-motd.d/
+
+  </div>
+
+</div>
+
+</body>
+</html>
